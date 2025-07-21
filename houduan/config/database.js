@@ -30,40 +30,53 @@ const mysql = require('mysql2');
 // 加载环境变量
 require('dotenv').config();
 
-// 创建数据库连接池
-let poolConfig;
-
-if (process.env.DATABASE_URL) {
-    // 使用完整的数据库URL
-    poolConfig = {
-        uri: process.env.DATABASE_URL,
-        charset: 'utf8mb4',
-        connectionLimit: 10,
-        queueLimit: 0,
-        multipleStatements: false,
-        acquireTimeout: 60000,
-        timeout: 60000,
-        reconnect: true,
-        ssl: false
-    };
-} else {
-    // 使用分离的环境变量
-    poolConfig = {
-        host: process.env.DB_HOST || 'localhost',
-        port: parseInt(process.env.DB_PORT) || 3306,
-        user: process.env.DB_USER || 'root',
-        password: process.env.DB_PASSWORD || '',
-        database: process.env.DB_NAME || 'rental_platform',
-        charset: 'utf8mb4',
-        connectionLimit: 10,
-        queueLimit: 0,
-        multipleStatements: false,
-        acquireTimeout: 60000,
-        timeout: 60000,
-        reconnect: true,
-        ssl: false
-    };
+// 解析DATABASE_URL或使用分离的环境变量
+function parseConnectionConfig() {
+    if (process.env.DATABASE_URL) {
+        // 解析DATABASE_URL: mysql://user:password@host:port/database
+        const url = new URL(process.env.DATABASE_URL);
+        return {
+            host: url.hostname,
+            port: parseInt(url.port) || 3306,
+            user: url.username,
+            password: url.password,
+            database: url.pathname.slice(1), // 移除开头的 '/'
+            charset: 'utf8mb4',
+            connectionLimit: 10,
+            queueLimit: 0,
+            multipleStatements: false,
+            acquireTimeout: 60000,
+            timeout: 60000,
+            reconnect: true,
+            ssl: false
+        };
+    } else {
+        // 使用分离的环境变量
+        return {
+            host: process.env.DB_HOST || 'localhost',
+            port: parseInt(process.env.DB_PORT) || 3306,
+            user: process.env.DB_USER || 'root',
+            password: process.env.DB_PASSWORD || '',
+            database: process.env.DB_NAME || 'rental_platform',
+            charset: 'utf8mb4',
+            connectionLimit: 10,
+            queueLimit: 0,
+            multipleStatements: false,
+            acquireTimeout: 60000,
+            timeout: 60000,
+            reconnect: true,
+            ssl: false
+        };
+    }
 }
+
+const poolConfig = parseConnectionConfig();
+console.log('🔧 数据库配置:', {
+    host: poolConfig.host,
+    port: poolConfig.port,
+    user: poolConfig.user,
+    database: poolConfig.database
+});
 
 const pool = mysql.createPool(poolConfig);
 
