@@ -77,6 +77,10 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/favorites', favoriteRoutes);
 
+// 数据库初始化路由（临时）
+const initRoutes = require('./routes/init');
+app.use('/api/init', initRoutes);
+
 // 健康检查接口
 app.get('/api/health', (req, res) => {
     res.json({
