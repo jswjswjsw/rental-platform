@@ -31,21 +31,41 @@ const mysql = require('mysql2');
 require('dotenv').config();
 
 // 创建数据库连接池
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT) || 3306,
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'rental_platform',
-    charset: 'utf8mb4',
-    connectionLimit: 10, // 连接池最大连接数
-    queueLimit: 0, // 队列限制
-    multipleStatements: false, // 禁止多语句查询，防止SQL注入
-    acquireTimeout: 60000, // 获取连接超时时间
-    timeout: 60000, // 查询超时时间
-    reconnect: true, // 自动重连
-    ssl: false // Railway不需要SSL
-});
+let poolConfig;
+
+if (process.env.DATABASE_URL) {
+    // 使用完整的数据库URL
+    poolConfig = {
+        uri: process.env.DATABASE_URL,
+        charset: 'utf8mb4',
+        connectionLimit: 10,
+        queueLimit: 0,
+        multipleStatements: false,
+        acquireTimeout: 60000,
+        timeout: 60000,
+        reconnect: true,
+        ssl: false
+    };
+} else {
+    // 使用分离的环境变量
+    poolConfig = {
+        host: process.env.DB_HOST || 'localhost',
+        port: parseInt(process.env.DB_PORT) || 3306,
+        user: process.env.DB_USER || 'root',
+        password: process.env.DB_PASSWORD || '',
+        database: process.env.DB_NAME || 'rental_platform',
+        charset: 'utf8mb4',
+        connectionLimit: 10,
+        queueLimit: 0,
+        multipleStatements: false,
+        acquireTimeout: 60000,
+        timeout: 60000,
+        reconnect: true,
+        ssl: false
+    };
+}
+
+const pool = mysql.createPool(poolConfig);
 
 // 获取Promise版本的连接池
 const promisePool = pool.promise();
