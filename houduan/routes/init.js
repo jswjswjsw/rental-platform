@@ -10,7 +10,7 @@ const { promisePool } = require('../config/database');
 /**
  * 初始化数据库表结构
  */
-router.post('/database', async (req, res) => {
+router.get('/database', async (req, res) => {
     try {
         console.log('🔧 开始初始化数据库...');
 
