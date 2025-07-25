@@ -9,7 +9,7 @@
             <p>登录您的账号，继续您的租赁之旅</p>
             <div class="decoration-features">
               <div class="feature-item">
-                <el-icon><Shield /></el-icon>
+                <el-icon><Lock /></el-icon>
                 <span>安全可靠</span>
               </div>
               <div class="feature-item">
@@ -57,7 +57,7 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Shield, Star, Service, House, QuestionFilled } from '@element-plus/icons-vue'
+import { Lock, Star, Service, House, QuestionFilled } from '@element-plus/icons-vue'
 import LoginForm from '@/components/auth/LoginForm.vue'
 
 const router = useRouter()

@@ -1,136 +1,146 @@
-# 🚀 租赁平台部署指南
+# 阿里云部署配置文档
 
-## 方案3：免费平台部署（推荐）
+## 🚨 404错误解决方案
 
-使用 **Vercel（前端）+ Railway（后端+数据库）** 的组合部署。
+### 问题描述
+访问Vue应用的路由（如 `/resources`、`/login` 等）时出现404错误。
 
-### 📋 部署前准备
+### 原因分析
+Vue单页应用(SPA)使用前端路由，当用户直接访问路由时，服务器找不到对应的物理文件。
 
-1. **GitHub仓库**
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git branch -M main
-   git remote add origin https://github.com/你的用户名/rental-platform.git
-   git push -u origin main
-   ```
+### 解决方案
 
-### 🚄 Railway后端部署
+#### 方案1：使用Node.js生产服务器（推荐）
 
-#### 1. 创建Railway项目
-- 访问 [Railway](https://railway.app)
-- 使用GitHub账号登录
-- 点击 "Start a New Project"
-
-#### 2. 部署MySQL数据库
-- 选择 "Provision MySQL"
-- 等待数据库创建完成
-- 记录连接信息（在Variables标签页）
-
-#### 3. 部署后端服务
-- 在同一项目中点击 "New Service"
-- 选择 "GitHub Repo" → 选择你的仓库
-- 设置根目录为 `houduan`
-
-#### 4. 配置环境变量
-在Railway后端服务的Variables中添加：
-```
-DB_HOST=你的MySQL主机地址
-DB_PORT=你的MySQL端口
-DB_USER=你的MySQL用户名
-DB_PASSWORD=你的MySQL密码
-DB_NAME=你的MySQL数据库名
-JWT_SECRET=your-super-secret-jwt-key-here
-JWT_EXPIRES_IN=7d
-NODE_ENV=production
-PORT=3000
+1. **运行部署脚本**
+```cmd
+deploy-production.bat
 ```
 
-#### 5. 初始化数据库
-部署完成后，在Railway控制台的服务日志中查看数据库初始化结果。
-
-### 🌐 Vercel前端部署
-
-#### 1. 准备Vercel部署
-- 访问 [Vercel](https://vercel.com)
-- 使用GitHub账号登录
-
-#### 2. 导入项目
-- 点击 "New Project"
-- 选择你的GitHub仓库
-- 设置根目录为 `qianduan`
-
-#### 3. 配置环境变量
-在Vercel项目设置的Environment Variables中添加：
-```
-VITE_API_BASE_URL=https://你的Railway后端域名
-```
-
-#### 4. 部署设置
-- Build Command: `npm run build`
-- Output Directory: `dist`
-- Install Command: `npm install`
-
-### 🔧 部署后配置
-
-#### 1. 更新前端API地址
-部署完成后，将Railway提供的后端域名更新到：
-- `qianduan/.env.production` 文件
-- Vercel环境变量中
-
-#### 2. 测试部署
-- 访问Vercel提供的前端域名
-- 测试用户注册、登录功能
-- 测试资源发布、浏览功能
-- 测试订单和收藏功能
-
-### 📱 域名配置（可选）
-
-#### Railway自定义域名
-- 在Railway服务设置中添加自定义域名
-- 配置DNS记录
-
-#### Vercel自定义域名
-- 在Vercel项目设置中添加域名
-- 配置DNS记录
-
-### 🔍 故障排除
-
-#### 常见问题
-1. **数据库连接失败**
-   - 检查Railway环境变量配置
-   - 查看服务日志
-
-2. **前端API调用失败**
-   - 检查CORS配置
-   - 确认API地址正确
-
-3. **构建失败**
-   - 检查package.json依赖
-   - 查看构建日志
-
-#### 调试命令
-```bash
-# 本地测试生产构建
+2. **或手动部署**
+```cmd
+# 构建前端
 cd qianduan
 npm run build
-npm run preview
+cd ..
 
-# 测试后端连接
-node test-connection.js
+# 安装代理依赖
+npm install http-proxy-middleware
+
+# 启动后端服务
+cd houduan
+start cmd /k "npm run dev"
+cd ..
+
+# 启动生产服务器
+node production-server.js
 ```
 
-### 💰 费用说明
+3. **访问测试**
+- 主页：http://你的ECS公网IP
+- 资源页：http://你的ECS公网IP/resources
+- 登录页：http://你的ECS公网IP/login
 
-- **Railway**: 免费额度每月500小时运行时间
-- **Vercel**: 免费额度每月100GB带宽
-- **总成本**: 个人项目完全免费
+#### 方案2：使用IIS（Windows ECS）
 
-### 🎉 部署完成
+1. **安装IIS URL重写模块**
+2. **在dist目录创建web.config**
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <system.webServer>
+    <rewrite>
+      <rules>
+        <rule name="Handle History Mode and hash fallback" stopProcessing="true">
+          <match url="(.*)" />
+          <conditions logicalGrouping="MatchAll">
+            <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
+            <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
+          </conditions>
+          <action type="Rewrite" url="/" />
+        </rule>
+      </rules>
+    </rewrite>
+  </system.webServer>
+</configuration>
+```
 
-恭喜！你的租赁平台已经成功部署到云端，可以通过以下地址访问：
-- 前端：https://你的项目名.vercel.app
-- 后端：https://你的项目名.up.railway.app
+## ECS环境变量配置
 
-现在你可以分享给朋友使用了！🎊
+在Windows ECS上，编辑 `houduan\.env` 文件：
+
+```env
+# 数据库配置 - 阿里云RDS
+DB_HOST=rm-bp1f62b28m6dxaqhf.mysql.rds.aliyuncs.com
+DB_PORT=3306
+DB_USER=rental_platform
+DB_PASSWORD=你在RDS中设置的密码
+DB_NAME=rental_platform
+
+# JWT配置
+JWT_SECRET=your-super-secret-jwt-key-change-in-production-2024
+JWT_EXPIRES_IN=7d
+
+# 服务器配置
+PORT=3000
+NODE_ENV=production
+
+# 文件上传配置
+UPLOAD_PATH=./uploads
+MAX_FILE_SIZE=5242880
+```
+
+## 部署命令
+
+在ECS的项目目录中执行：
+
+```cmd
+# 进入后端目录
+cd houduan
+
+# 安装依赖
+npm install
+
+# 测试连接
+node -e "require('./config/database').testConnection()"
+
+# 启动服务
+npm start
+```
+
+## 安全组配置
+
+确保ECS安全组开放以下端口：
+- 22 (SSH)
+- 3000 (后端API)
+- 80 (HTTP)
+- 443 (HTTPS)
+
+## 域名配置（可选）
+
+1. 购买域名
+2. 配置DNS解析指向ECS公网IP
+3. 配置SSL证书
+
+## 前端部署
+
+### 方法1：同一台ECS
+```cmd
+cd qianduan
+npm install
+npm run build
+# 配置IIS或nginx托管dist文件夹
+```
+
+### 方法2：OSS + CDN
+1. 创建OSS存储桶
+2. 上传构建后的文件
+3. 配置CDN加速
+```
+
+## 监控和维护
+
+- 使用PM2管理Node.js进程
+- 配置日志轮转
+- 设置自动重启
+- 监控资源使用情况

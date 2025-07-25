@@ -1,7 +1,19 @@
 {
+  "name": "rental-platform",
+  "version": "1.0.0",
+  "description": "闲置资源租赁平台",
+  "main": "production-server.js",
+  "scripts": {
+    "start": "node production-server.js",
+    "dev": "node serve-static.js",
+    "build": "cd qianduan && npm run build",
+    "deploy": "npm run build && npm start"
+  },
   "dependencies": {
     "axios": "^1.10.0",
     "dotenv": "^17.2.0",
+    "express": "^4.21.2",
+    "http-proxy-middleware": "^2.0.9",
     "mysql2": "^3.14.2"
   }
 }

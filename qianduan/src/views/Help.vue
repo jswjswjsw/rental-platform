@@ -42,7 +42,7 @@
         </div>
         <div class="nav-item" @click="scrollToSection('safety')">
           <el-icon size="32" color="#e6a23c">
-            <Shield />
+            <Lock />
           </el-icon>
           <h3>安全保障</h3>
           <p>了解平台安全机制</p>
@@ -233,7 +233,7 @@
 <script setup>
 import { ref } from 'vue'
 import { 
-  Search, Guide, Box, Shield, QuestionFilled, UserFilled, 
+  Search, Guide, Box, Lock, QuestionFilled, UserFilled, 
   CreditCard, Star, Service, Phone, Message 
 } from '@element-plus/icons-vue'
 

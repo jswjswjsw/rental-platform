@@ -38,7 +38,6 @@ const OrderDetail = () => import('@/views/OrderDetail.vue')
 const Profile = () => import('@/views/Profile.vue')
 const Login = () => import('@/views/Login.vue')
 const Register = () => import('@/views/Register.vue')
-const About = () => import('@/views/About.vue')
 const Help = () => import('@/views/Help.vue')
 const NotFound = () => import('@/views/NotFound.vue')
 
@@ -121,14 +120,7 @@ const routes = [
       hideForAuth: true
     }
   },
-  {
-    path: '/about',
-    name: 'About',
-    component: About,
-    meta: {
-      title: '关于我们'
-    }
-  },
+
   {
     path: '/help',
     name: 'Help',

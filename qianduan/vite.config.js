@@ -29,6 +29,14 @@ import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 
 export default defineConfig({
+  // ==================== 基础配置 ====================
+  
+  /**
+   * 基础路径配置
+   * 生产环境下的资源路径前缀
+   */
+  base: '/',
+
   // ==================== 插件配置 ====================
 
   /**

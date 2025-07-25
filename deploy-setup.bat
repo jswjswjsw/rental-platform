@@ -1,45 +1,28 @@
 @echo off
-echo 🚀 租赁平台部署准备脚本
-echo.
+echo 阿里云函数计算部署准备脚本
 
-echo 📋 第一步：准备Git仓库
-echo.
-echo 请确保你已经：
-echo 1. 在GitHub创建了仓库 rental-platform
-echo 2. 获得了仓库的Git地址
-echo.
-set /p repo_url="请输入你的GitHub仓库地址 (例如: https://github.com/username/rental-platform.git): "
+echo 1. 安装阿里云CLI工具
+echo 请访问: https://help.aliyun.com/document_detail/139508.html
+echo 下载并安装 Alibaba Cloud CLI
 
 echo.
-echo 🔄 初始化Git仓库...
-git init
-git add .
-git commit -m "Initial commit - 租赁平台项目"
-git branch -M main
-git remote add origin %repo_url%
+echo 2. 安装Serverless Devs工具
+npm install -g @serverless-devs/s
 
 echo.
-echo 📤 推送代码到GitHub...
-git push -u origin main
+echo 3. 配置阿里云账号
+echo 运行: s config add
+echo 需要输入:
+echo - AccountID: 你的阿里云账号ID
+echo - AccessKeyID: 访问密钥ID  
+echo - AccessKeySecret: 访问密钥Secret
+echo - DefaultRegion: cn-hangzhou
 
 echo.
-echo ✅ 代码已推送到GitHub！
+echo 4. 初始化函数计算项目
+s init fc-http-nodejs14 -d fc-rental-api
+
 echo.
-echo 📋 接下来请按照以下步骤部署：
-echo.
-echo 🚄 Railway后端部署：
-echo 1. 访问 https://railway.app
-echo 2. 使用GitHub登录
-echo 3. 创建新项目，添加MySQL数据库
-echo 4. 添加GitHub服务，选择你的仓库，根目录设为 houduan
-echo 5. 配置环境变量（参考 DEPLOYMENT.md）
-echo.
-echo 🌐 Vercel前端部署：
-echo 1. 访问 https://vercel.com  
-echo 2. 使用GitHub登录
-echo 3. 导入项目，根目录设为 qianduan
-echo 4. 配置环境变量 VITE_API_BASE_URL
-echo.
-echo 📖 详细步骤请查看 DEPLOYMENT.md 文件
-echo.
+echo 部署准备完成！
+echo 接下来需要配置函数代码和环境变量
 pause
