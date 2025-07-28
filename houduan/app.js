@@ -46,7 +46,7 @@ app.use(helmet());
 // 跨域配置
 app.use(cors({
     origin: process.env.NODE_ENV === 'production' 
-        ? ['http://localhost:8080'] // 生产环境允许的域名
+        ? ['http://localhost:8080', 'http://116.62.44.24:8080', 'http://116.62.44.24'] // 生产环境允许的域名
         : true, // 开发环境允许所有域名
     credentials: true
 }));
@@ -145,10 +145,17 @@ app.use((err, req, res, next) => {
 
 // 启动服务器
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 服务器运行在端口 ${PORT}`);
-    console.log(`📱 API地址: http://localhost:${PORT}/api`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log('==========================================');
+    console.log('🚀 闲置租赁平台 - 后端API服务启动成功');
+    console.log('==========================================');
+    console.log(`📍 服务端口: ${PORT}`);
+    console.log(`🌐 本地访问: http://localhost:${PORT}/api`);
+    console.log(`🌐 公网访问: http://116.62.44.24:${PORT}/api`);
     console.log(`🏥 健康检查: http://localhost:${PORT}/api/health`);
+    console.log(`🔧 环境模式: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`⏰ 启动时间: ${new Date().toLocaleString()}`);
+    console.log('==========================================');
 });
 
 module.exports = app;

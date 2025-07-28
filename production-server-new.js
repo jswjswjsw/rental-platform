@@ -1,13 +1,6 @@
 /**
- * 生产环境服务器配置 - 优化版本
+ * 生产环境服务器配置 - 重新部署版本
  * 用于ECS部署，同时提供前端静态文件和后端API服务
- * 
- * 功能特性：
- * - 静态文件服务（前端构建文件）
- * - API代理到后端服务
- * - SPA路由支持（解决404问题）
- * - 错误处理和日志记录
- * - 跨域和安全配置
  */
 
 const express = require('express');
@@ -16,13 +9,6 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
-
-// 日志中间件
-app.use((req, res, next) => {
-    const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] ${req.method} ${req.url} - ${req.ip}`);
-    next();
-});
 
 // 静态文件服务 - 提供前端构建后的文件
 app.use(express.static(path.join(__dirname, 'qianduan/dist')));
@@ -61,16 +47,11 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log('==========================================');
-    console.log('🚀 闲置租赁平台 - 生产服务器启动成功');
-    console.log('==========================================');
-    console.log(`📍 服务端口: ${PORT}`);
+    console.log(`🚀 生产服务器运行在端口 ${PORT}`);
     console.log(`🌐 本地访问: http://localhost:${PORT}`);
     console.log(`🌐 公网访问: http://116.62.44.24:${PORT}`);
-    console.log(`📱 API代理: ${PORT}/api -> 3000/api`);
+    console.log(`📱 API代理: http://localhost:${PORT}/api -> http://localhost:3000/api`);
     console.log(`📁 静态文件: ${path.join(__dirname, 'qianduan/dist')}`);
-    console.log(`⏰ 启动时间: ${new Date().toLocaleString()}`);
-    console.log('==========================================');
 });
 
 module.exports = app;
