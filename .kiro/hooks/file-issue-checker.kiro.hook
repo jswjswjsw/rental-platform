@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "File Issue Checker",
+  "description": "Monitors all project files for changes and analyzes them for potential issues, bugs, or problems",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Please analyze the changed files for potential issues, bugs, or problems. Look for:\n1. Syntax errors or typos\n2. Configuration issues\n3. Missing dependencies or imports\n4. Security vulnerabilities\n5. Performance issues\n6. Code quality problems\n7. Deployment or build issues\n8. Database connection or query problems\n9. Authentication or authorization issues\n10. File structure or naming convention problems\n\nProvide specific feedback on what issues you found and suggest solutions. Focus on practical problems that could affect functionality."
+  }
+}
