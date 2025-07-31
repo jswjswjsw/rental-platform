@@ -6,7 +6,7 @@ const mysql = require('mysql2/promise');
 const net = require('net');
 
 // 如果RDS有公网地址，替换这里的地址
-const PUBLIC_HOST = 'rm-bp1f62b28m6dxaqhf.mysql.rds.aliyuncs.com'; // 替换为公网地址
+const PUBLIC_HOST = 'rm-bp1f62b28m6dxaqhf1219.mysql.rds.aliyuncs.com'; // 替换为公网地址
 const PORT = 3306;
 
 async function testPublicConnection() {

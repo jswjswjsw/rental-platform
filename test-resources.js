@@ -25,11 +25,11 @@ async function testResourceQuery() {
         // 检查资源数据
         const [resources] = await promisePool.execute('SELECT id, title, images FROM resources');
         console.log('✅ 资源总数:', resources.length);
-        
+
         resources.forEach(resource => {
             console.log(`   - ${resource.title}`);
             console.log(`     图片数据: ${resource.images}`);
-            
+
             try {
                 const imageArray = JSON.parse(resource.images);
                 console.log(`     解析后的图片:`, imageArray);

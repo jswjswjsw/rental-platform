@@ -71,7 +71,7 @@ node production-server.js
 
 ```env
 # 数据库配置 - 阿里云RDS
-DB_HOST=rm-bp1f62b28m6dxaqhf.mysql.rds.aliyuncs.com
+DB_HOST=rm-bp1f62b28m6dxaqhf1219.mysql.rds.aliyuncs.com
 DB_PORT=3306
 DB_USER=rental_platform
 DB_PASSWORD=你在RDS中设置的密码
