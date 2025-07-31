@@ -19,6 +19,8 @@
  * - DB_USER: 数据库用户名
  * - DB_PASSWORD: 数据库密码
  * - DB_NAME: 数据库名称
+ * - DB_SSL: 是否启用SSL连接 (true/false)
+ * - DATABASE_URL: 完整数据库连接URL (可选，优先级高于分离变量)
  * 
  * @author 开发团队
  * @version 1.0.0
@@ -32,12 +34,18 @@ require('dotenv').config();
 
 // 解析DATABASE_URL或使用分离的环境变量
 function parseConnectionConfig() {
+    // 验证端口号
+    const validatePort = (port) => {
+        const parsed = parseInt(port);
+        return (parsed && parsed > 0 && parsed <= 65535) ? parsed : null;
+    };
+
     if (process.env.DATABASE_URL) {
         // 解析DATABASE_URL: mysql://user:password@host:port/database
         const url = new URL(process.env.DATABASE_URL);
         return {
             host: url.hostname,
-            port: parseInt(url.port) || 3306,
+            port: validatePort(url.port) || 3306,
             user: url.username,
             password: url.password,
             database: url.pathname.slice(1), // 移除开头的 '/'
@@ -48,13 +56,15 @@ function parseConnectionConfig() {
             acquireTimeout: 60000,
             timeout: 60000,
             reconnect: true,
-            ssl: false
+            ssl: process.env.DB_SSL === 'true' ? {
+                rejectUnauthorized: false
+            } : false
         };
     } else {
         // 使用分离的环境变量
         return {
             host: process.env.DB_HOST || 'localhost',
-            port: parseInt(process.env.DB_PORT) || 3306,
+            port: validatePort(process.env.DB_PORT) || 3306,
             user: process.env.DB_USER || 'root',
             password: process.env.DB_PASSWORD || '',
             database: process.env.DB_NAME || 'rental_platform',
@@ -65,7 +75,9 @@ function parseConnectionConfig() {
             acquireTimeout: 60000,
             timeout: 60000,
             reconnect: true,
-            ssl: false
+            ssl: process.env.DB_SSL === 'true' ? {
+                rejectUnauthorized: false
+            } : false
         };
     }
 }
@@ -74,7 +86,7 @@ const poolConfig = parseConnectionConfig();
 console.log('🔧 数据库配置:', {
     host: poolConfig.host,
     port: poolConfig.port,
-    user: poolConfig.user,
+    user: poolConfig.user ? '***' : 'not set',
     database: poolConfig.database
 });
 
@@ -94,6 +106,16 @@ async function testConnection() {
         return true;
     } catch (error) {
         console.error('❌ 数据库连接失败:', error.message);
+
+        // 提供更详细的错误信息
+        if (error.code === 'ECONNREFUSED') {
+            console.error('💡 建议: 检查数据库服务是否启动，主机地址和端口是否正确');
+        } else if (error.code === 'ER_ACCESS_DENIED_ERROR') {
+            console.error('💡 建议: 检查数据库用户名和密码是否正确');
+        } else if (error.code === 'ER_BAD_DB_ERROR') {
+            console.error('💡 建议: 检查数据库名称是否存在');
+        }
+
         return false;
     }
 }
