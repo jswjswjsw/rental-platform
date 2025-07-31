@@ -28,10 +28,20 @@ async function checkNetwork() {
         // 检查端口连通性
         console.log('\n🔍 检查端口连通性...');
         try {
-            await execAsync(`powershell -Command "Test-NetConnection -ComputerName ${dbHost} -Port ${dbPort} -InformationLevel Quiet"`, { timeout: 10000 });
-            console.log('✅ 端口连通性正常');
+            const { stdout } = await execAsync(`powershell -Command "Test-NetConnection -ComputerName ${dbHost} -Port ${dbPort} -InformationLevel Quiet"`, { timeout: 10000 });
+            if (stdout.trim() === 'True') {
+                console.log('✅ 端口连通性正常');
+            } else {
+                console.log('❌ 端口连接失败');
+            }
         } catch (error) {
-            console.log('❌ 端口连接失败 - 可能是防火墙或白名单问题');
+            console.log('❌ 端口连接测试失败 - 尝试使用telnet替代');
+            try {
+                await execAsync(`telnet ${dbHost} ${dbPort}`, { timeout: 5000 });
+                console.log('✅ Telnet连接成功');
+            } catch (telnetError) {
+                console.log('❌ 端口连接失败 - 可能是防火墙或白名单问题');
+            }
         }
         
         // 检查本机IP

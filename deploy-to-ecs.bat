@@ -6,6 +6,16 @@ echo 目标RDS: rm-bp1f62b28m6dxaqhf1219
 echo ========================================
 echo.
 
+echo 检查PM2是否安装...
+pm2 --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ PM2未安装，请先运行: npm install -g pm2
+    pause
+    exit /b 1
+)
+echo ✅ PM2已安装
+echo.
+
 echo 1. 运行RDS连接诊断...
 node aliyun-rds-check.js
 

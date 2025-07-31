@@ -24,16 +24,16 @@ async function quickTest() {
     console.log(`👤 用户: ${config.user}`);
     console.log(`💾 数据库: ${config.database}\n`);
     
+    let connection = null;
     try {
         console.log('🔌 正在连接...');
-        const connection = await mysql.createConnection(config);
+        connection = await mysql.createConnection(config);
         
         console.log('✅ 连接成功!');
         
         const [rows] = await connection.execute('SELECT 1 as test, NOW() as time');
         console.log('📊 测试查询结果:', rows[0]);
         
-        await connection.end();
         console.log('🎉 测试完成，连接正常!');
         
     } catch (error) {
@@ -44,6 +44,11 @@ async function quickTest() {
             console.log('💡 请检查RDS白名单和用户权限');
         } else if (error.code === 'ECONNREFUSED') {
             console.log('💡 请检查网络连接和RDS状态');
+        }
+    } finally {
+        if (connection) {
+            await connection.end();
+            console.log('🔌 连接已关闭');
         }
     }
 }

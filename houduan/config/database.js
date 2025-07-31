@@ -2,8 +2,8 @@
  * 阿里云RDS数据库连接配置模块
  * 
  * RDS实例信息：
- * - 实例ID: rm-bp1f62b28m6dxaqhf1219
- * - 内网地址: rm-bp1f62b28m6dxaqhf1219.mysql.rds.aliyuncs.com
+ * - 实例ID: rm-bp1f62b28m6dxaqhf1205
+ * - 内网地址: rm-bp1f62b28m6dxaqhf1205.mysql.rds.aliyuncs.com
  * - 数据库版本: MySQL 8.0
  * - 存储类型: 云盘ESSD
  * 
@@ -77,8 +77,6 @@ function parseConnectionConfig() {
             connectionLimit: 10,        // 连接池大小
             queueLimit: 0,              // 队列限制
             multipleStatements: false,  // 禁止多语句查询（安全）
-            acquireTimeout: 60000,      // 获取连接超时时间
-            timeout: 60000,             // 查询超时时间
             ssl: process.env.DB_SSL === 'true' ? {
                 rejectUnauthorized: false
             } : false

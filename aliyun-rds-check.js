@@ -24,7 +24,7 @@ require('dotenv').config({ path: './houduan/.env' });
 async function checkAliyunRDS() {
     console.log('🔍 阿里云ECS -> RDS连接诊断');
     console.log('=====================================');
-    console.log('目标RDS实例: rm-bp1f62b28m6dxaqhf1219');
+    console.log('目标RDS实例: rm-bp1f62b28m6dxaqhf1205');
     console.log('=====================================\n');
     
     const dbHost = process.env.DB_HOST;
