@@ -62,7 +62,7 @@ function parseConnectionConfig() {
             queueLimit: 0,
             multipleStatements: false,
             ssl: process.env.DB_SSL === 'true' ? {
-                rejectUnauthorized: false
+                rejectUnauthorized: process.env.NODE_ENV !== 'development'
             } : false
         };
     } else {
@@ -77,8 +77,10 @@ function parseConnectionConfig() {
             connectionLimit: 10,        // 连接池大小
             queueLimit: 0,              // 队列限制
             multipleStatements: false,  // 禁止多语句查询（安全）
+            acquireTimeout: 60000,      // 获取连接超时时间
+            timeout: 60000,             // 查询超时时间
             ssl: process.env.DB_SSL === 'true' ? {
-                rejectUnauthorized: false
+                rejectUnauthorized: process.env.NODE_ENV !== 'development'
             } : false
         };
     }
@@ -94,14 +96,20 @@ if (!poolConfig.host || !poolConfig.user || !poolConfig.password || !poolConfig.
     if (!poolConfig.password) console.error('   - DB_PASSWORD 未设置');
     if (!poolConfig.database) console.error('   - DB_NAME 未设置');
     console.error('💡 请检查 houduan/.env 文件配置');
-    process.exit(1);
+    
+    // 在生产环境中抛出错误而不是直接退出进程
+    if (process.env.NODE_ENV === 'production') {
+        throw new Error('Database configuration is incomplete');
+    } else {
+        process.exit(1);
+    }
 }
 
 // 输出连接配置信息（隐藏敏感信息）
 console.log('🔧 阿里云RDS连接配置:');
 console.log(`   RDS地址: ${poolConfig.host}`);
 console.log(`   端口: ${poolConfig.port}`);
-console.log(`   用户: ${poolConfig.user ? poolConfig.user.substring(0, 3) + '***' : '❌未设置'}`);
+console.log(`   用户: ${poolConfig.user ? '***已设置***' : '❌未设置'}`);
 console.log(`   密码: ${poolConfig.password ? '***已设置***' : '❌未设置'}`);
 console.log(`   数据库: ${poolConfig.database}`);
 console.log(`   字符集: ${poolConfig.charset}`);
@@ -109,6 +117,20 @@ console.log(`   连接池大小: ${poolConfig.connectionLimit}`);
 
 // 创建连接池
 const pool = mysql.createPool(poolConfig);
+
+// 添加连接池错误处理
+pool.on('connection', function (connection) {
+    console.log('🔗 新的数据库连接建立: ' + connection.threadId);
+});
+
+pool.on('error', function(err) {
+    console.error('❌ 数据库连接池错误:', err);
+    if(err.code === 'PROTOCOL_CONNECTION_LOST') {
+        console.log('🔄 数据库连接丢失，尝试重新连接...');
+    } else {
+        throw err;
+    }
+});
 
 // 获取Promise版本的连接池
 const promisePool = pool.promise();
