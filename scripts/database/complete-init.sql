@@ -103,6 +103,19 @@ CREATE TABLE reviews (
     INDEX idx_user (user_id)
 ) COMMENT '评价表';
 
+-- 收藏表
+CREATE TABLE favorites (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL COMMENT '用户ID',
+    resource_id INT NOT NULL COMMENT '资源ID',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '收藏时间',
+    UNIQUE KEY unique_favorite (user_id, resource_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (resource_id) REFERENCES resources(id) ON DELETE CASCADE,
+    INDEX idx_user (user_id),
+    INDEX idx_resource (resource_id)
+) COMMENT '用户收藏表';
+
 -- 插入初始数据
 INSERT INTO categories (name, description, icon, sort_order) VALUES
 ('电子设备', '手机、电脑、相机等电子产品', 'el-icon-mobile-phone', 1),

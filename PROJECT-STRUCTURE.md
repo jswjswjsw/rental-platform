@@ -79,6 +79,28 @@ scripts\deployment\deploy-frontend-complete.bat
 scripts\deployment\restart-services.bat
 ```
 
+## 🗄️ 数据库管理
+
+### 数据库迁移
+```bash
+# 执行所有待执行的迁移
+cd scripts/database
+node migrations.js
+
+# 检查数据库状态
+node migrations.js --check
+```
+
+### 初始化数据库
+```bash
+# 完整初始化（新项目）
+mysql -h host -u user -p database < scripts/database/complete-init.sql
+
+# 增量更新（现有项目）
+cd scripts/database
+node migrations.js
+```
+
 ## 🔧 常用命令
 
 ### 服务管理
