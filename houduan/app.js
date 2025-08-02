@@ -103,11 +103,48 @@ app.use('*', (req, res) => {
 app.use((err, req, res, next) => {
     console.error('服务器错误:', err);
     
-    // 数据库错误
+    // 数据库连接错误
+    if (err.code === 'ECONNREFUSED') {
+        return res.status(503).json({
+            status: 'error',
+            message: '数据库连接失败，请稍后重试',
+            code: 'DATABASE_CONNECTION_FAILED'
+        });
+    }
+    
+    // 数据库权限错误
+    if (err.code === 'ER_ACCESS_DENIED_ERROR') {
+        return res.status(503).json({
+            status: 'error',
+            message: '数据库访问权限不足',
+            code: 'DATABASE_ACCESS_DENIED'
+        });
+    }
+    
+    // 数据库表不存在错误
+    if (err.code === 'ER_NO_SUCH_TABLE') {
+        return res.status(503).json({
+            status: 'error',
+            message: '数据表不存在，请联系管理员',
+            code: 'DATABASE_TABLE_MISSING'
+        });
+    }
+    
+    // 数据库超时错误
+    if (err.code === 'ETIMEDOUT') {
+        return res.status(503).json({
+            status: 'error',
+            message: '数据库连接超时，请稍后重试',
+            code: 'DATABASE_TIMEOUT'
+        });
+    }
+    
+    // 数据库重复条目错误
     if (err.code === 'ER_DUP_ENTRY') {
         return res.status(400).json({
             status: 'error',
-            message: '数据已存在'
+            message: '数据已存在',
+            code: 'DUPLICATE_ENTRY'
         });
     }
     
@@ -115,14 +152,16 @@ app.use((err, req, res, next) => {
     if (err.name === 'JsonWebTokenError') {
         return res.status(401).json({
             status: 'error',
-            message: '无效的token'
+            message: '无效的token',
+            code: 'INVALID_TOKEN'
         });
     }
     
     if (err.name === 'TokenExpiredError') {
         return res.status(401).json({
             status: 'error',
-            message: 'token已过期'
+            message: 'token已过期',
+            code: 'TOKEN_EXPIRED'
         });
     }
     
@@ -130,7 +169,17 @@ app.use((err, req, res, next) => {
     if (err.code === 'LIMIT_FILE_SIZE') {
         return res.status(400).json({
             status: 'error',
-            message: '文件大小超出限制'
+            message: '文件大小超出限制',
+            code: 'FILE_TOO_LARGE'
+        });
+    }
+    
+    // 文件类型错误
+    if (err.message && err.message.includes('只允许上传图片文件')) {
+        return res.status(400).json({
+            status: 'error',
+            message: '只允许上传图片文件',
+            code: 'INVALID_FILE_TYPE'
         });
     }
     
@@ -139,7 +188,8 @@ app.use((err, req, res, next) => {
         status: 'error',
         message: process.env.NODE_ENV === 'production' 
             ? '服务器内部错误' 
-            : err.message
+            : err.message,
+        code: 'INTERNAL_SERVER_ERROR'
     });
 });
 
