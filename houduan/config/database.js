@@ -146,9 +146,9 @@ async function testConnection() {
         console.log('✅ 阿里云RDS连接成功');
         
         // 获取数据库版本信息
-        const [rows] = await connection.execute('SELECT VERSION() as version, NOW() as current_time');
+        const [rows] = await connection.execute('SELECT VERSION() as version, NOW() as server_time');
         console.log(`📊 MySQL版本: ${rows[0].version}`);
-        console.log(`⏰ 服务器时间: ${rows[0].current_time}`);
+        console.log(`⏰ 服务器时间: ${rows[0].server_time}`);
         
         connection.release();
         return true;
