@@ -76,6 +76,7 @@ export default defineConfig({
      * 前端应用将在 http://localhost:8080 运行
      */
     port: 8080,
+    host: '0.0.0.0', // 监听所有网络接口
 
     /**
      * API代理配置
