@@ -75,7 +75,7 @@ async function diagnoseConnection() {
             SELECT 
                 VERSION() as version, 
                 @@hostname as hostname, 
-                NOW() as current_time,
+                NOW() as server_time,
                 @@port as port,
                 @@character_set_server as charset,
                 @@max_connections as max_connections
@@ -84,7 +84,7 @@ async function diagnoseConnection() {
         console.log('📊 RDS服务器信息:');
         console.log(`   MySQL版本: ${serverInfo[0].version}`);
         console.log(`   服务器主机: ${serverInfo[0].hostname}`);
-        console.log(`   服务器时间: ${serverInfo[0].current_time}`);
+        console.log(`   服务器时间: ${serverInfo[0].server_time}`);
         console.log(`   端口: ${serverInfo[0].port}`);
         console.log(`   字符集: ${serverInfo[0].charset}`);
         console.log(`   最大连接数: ${serverInfo[0].max_connections}`);

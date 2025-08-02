@@ -39,6 +39,7 @@ const resourceRoutes = require('./routes/resources');
 const orderRoutes = require('./routes/orders');
 const reviewRoutes = require('./routes/reviews');
 const favoriteRoutes = require('./routes/favorites');
+const paymentRoutes = require('./routes/payments');
 
 // 安全中间件
 app.use(helmet());
@@ -76,6 +77,7 @@ app.use('/api/resources', resourceRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/favorites', favoriteRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // 数据库初始化路由（临时）
 const initRoutes = require('./routes/init');

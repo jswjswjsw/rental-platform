@@ -43,9 +43,9 @@ async function fixDatabaseConnection() {
         console.log('✅ RDS连接成功');
         
         // 获取服务器信息
-        const [serverInfo] = await connection.execute('SELECT VERSION() as version, NOW() as current_time');
+        const [serverInfo] = await connection.execute('SELECT VERSION() as version, NOW() as server_time');
         console.log(`   MySQL版本: ${serverInfo[0].version}`);
-        console.log(`   服务器时间: ${serverInfo[0].current_time}`);
+        console.log(`   服务器时间: ${serverInfo[0].server_time}`);
         
         await connection.end();
         return true;
