@@ -137,8 +137,8 @@
               </template>
               <!-- 如果是租客，可以支付或取消订单 -->
               <template v-else>
-                <el-button type="primary" @click="goToPayment('rent')">支付租金</el-button>
-                <el-button type="warning" @click="goToPayment('deposit')">支付押金</el-button>
+                <el-button type="primary" @click="handlePayment('rent')">支付租金</el-button>
+                <el-button type="warning" @click="handlePayment('deposit')">支付押金</el-button>
                 <el-button type="danger" @click="cancelOrder">取消订单</el-button>
               </template>
             </template>
@@ -298,15 +298,6 @@ const goToPayment = (type) => {
       orderId: order.value.id,
       type: type
     }
-  })
-}
-
-// 跳转到支付页面
-const goToPayment = (paymentType) => {
-  router.push({
-    name: 'Payment',
-    params: { orderId: order.value.id },
-    query: { type: paymentType }
   })
 }
 
