@@ -39,6 +39,7 @@ const Profile = () => import('@/views/Profile.vue')
 const Login = () => import('@/views/Login.vue')
 const Register = () => import('@/views/Register.vue')
 const Help = () => import('@/views/Help.vue')
+const Payment = () => import('@/views/Payment.vue')
 const NotFound = () => import('@/views/NotFound.vue')
 
 const routes = [
@@ -121,6 +122,24 @@ const routes = [
     }
   },
 
+  {
+    path: '/payment/:orderId',
+    name: 'Payment',
+    component: Payment,
+    meta: {
+      title: '订单支付',
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/payment',
+    name: 'PaymentQuery',
+    component: Payment,
+    meta: {
+      title: '订单支付',
+      requiresAuth: true
+    }
+  },
   {
     path: '/help',
     name: 'Help',

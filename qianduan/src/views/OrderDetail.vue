@@ -135,8 +135,10 @@
                 <el-button type="primary" @click="confirmOrder">确认订单</el-button>
                 <el-button type="danger" @click="rejectOrder">拒绝订单</el-button>
               </template>
-              <!-- 如果是租客，可以取消订单 -->
+              <!-- 如果是租客，可以支付或取消订单 -->
               <template v-else>
+                <el-button type="primary" @click="goToPayment('rent')">支付租金</el-button>
+                <el-button type="warning" @click="goToPayment('deposit')">支付押金</el-button>
                 <el-button type="danger" @click="cancelOrder">取消订单</el-button>
               </template>
             </template>
@@ -286,6 +288,26 @@ const contactUser = async (userType) => {
     console.error('获取联系方式失败:', error)
     ElMessage.error('获取联系方式失败')
   }
+}
+
+// 跳转到支付页面
+const goToPayment = (type) => {
+  router.push({
+    path: '/payment',
+    query: {
+      orderId: order.value.id,
+      type: type
+    }
+  })
+}
+
+// 跳转到支付页面
+const goToPayment = (paymentType) => {
+  router.push({
+    name: 'Payment',
+    params: { orderId: order.value.id },
+    query: { type: paymentType }
+  })
 }
 
 const confirmOrder = () => updateOrderStatus('confirmed', '确认接受这个租赁订单吗？')

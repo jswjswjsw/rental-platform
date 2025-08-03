@@ -3,12 +3,28 @@
  * 用于测试后端API是否正常工作
  */
 
-const axios = require('axios');
+// 检查依赖是否安装
+let axios;
+try {
+    axios = require('axios');
+} catch (error) {
+    console.error('❌ axios 模块未安装，请运行: npm install axios');
+    process.exit(1);
+}
+
+// 加载环境变量
+try {
+    require('dotenv').config({ path: './houduan/.env' });
+} catch (error) {
+    console.warn('⚠️ dotenv 模块未安装，使用默认配置');
+}
 
 async function testAPI() {
     console.log('🧪 开始测试API接口...\n');
     
-    const baseURL = 'http://localhost:3000/api';
+    // 使用环境变量或默认值
+    const port = process.env.PORT || 3000;
+    const baseURL = `http://localhost:${port}/api`;
     
     const tests = [
         {
@@ -25,6 +41,12 @@ async function testAPI() {
             name: '获取分类列表',
             url: `${baseURL}/categories`,
             method: 'GET'
+        },
+        {
+            name: '测试不存在的接口',
+            url: `${baseURL}/nonexistent`,
+            method: 'GET',
+            expectError: true
         }
     ];
     
@@ -44,10 +66,16 @@ async function testAPI() {
             console.log('');
             
         } catch (error) {
-            console.log(`❌ 失败: ${error.message}`);
+            if (test.expectError) {
+                console.log(`✅ 预期错误: ${error.message}`);
+            } else {
+                console.log(`❌ 失败: ${error.message}`);
+            }
             if (error.response) {
                 console.log(`   状态码: ${error.response.status}`);
                 console.log(`   响应: ${JSON.stringify(error.response.data)}`);
+            } else if (error.code === 'ECONNREFUSED') {
+                console.log('   💡 提示: 请确保后端服务已启动 (cd houduan && npm start)');
             }
             console.log('');
         }
