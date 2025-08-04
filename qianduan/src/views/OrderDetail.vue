@@ -237,6 +237,11 @@ const fetchOrderDetail = async () => {
 
 // 订单操作函数
 const updateOrderStatus = async (status, confirmText) => {
+  if (!order.value || !order.value.id) {
+    ElMessage.error('订单信息不完整，无法执行操作')
+    return
+  }
+  
   try {
     await ElMessageBox.confirm(confirmText, '提示', {
       confirmButtonText: '确认',
@@ -259,6 +264,11 @@ const updateOrderStatus = async (status, confirmText) => {
 
 // 联系用户功能
 const contactUser = async (userType) => {
+  if (!order.value) {
+    ElMessage.error('订单信息不完整')
+    return
+  }
+  
   try {
     const targetUserId = userType === 'owner' ? order.value.owner_id : order.value.renter_id
     const targetUserName = userType === 'owner' ? order.value.owner_name : order.value.renter_name
@@ -290,14 +300,22 @@ const contactUser = async (userType) => {
   }
 }
 
-// 跳转到支付页面
-const goToPayment = (type) => {
+// 处理支付跳转
+const handlePayment = (type) => {
+  if (!order.value || !order.value.id) {
+    ElMessage.error('订单信息不完整，无法进行支付')
+    return
+  }
+  
   router.push({
     path: '/payment',
     query: {
       orderId: order.value.id,
       type: type
     }
+  }).catch(err => {
+    console.error('跳转支付页面失败:', err)
+    ElMessage.error('跳转支付页面失败')
   })
 }
 

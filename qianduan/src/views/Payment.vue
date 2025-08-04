@@ -173,7 +173,7 @@
 <script>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ElMessage, ElLoading } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import api from '@/utils/api'
 import WechatPay from '@/components/payment/WechatPay.vue'
 
@@ -244,7 +244,7 @@ export default {
     }
 
     // 处理支付成功
-    const handlePaymentSuccess = (data) => {
+    const handlePaymentSuccess = () => {
       ElMessage.success('支付成功！')
       
       // 刷新支付记录

@@ -35,6 +35,15 @@ const { promisePool } = require('../config/database');
  */
 const authenticateToken = async (req, res, next) => {
     try {
+        // 验证JWT_SECRET是否配置
+        if (!process.env.JWT_SECRET) {
+            console.error('JWT_SECRET未配置');
+            return res.status(500).json({
+                status: 'error',
+                message: '服务器配置错误'
+            });
+        }
+
         // 从请求头获取token
         const authHeader = req.headers['authorization'];
         const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
@@ -48,7 +57,7 @@ const authenticateToken = async (req, res, next) => {
 
         // 验证token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
+
         // 查询用户信息
         const [users] = await promisePool.execute(
             'SELECT id, username, email, status FROM users WHERE id = ?',
@@ -82,7 +91,7 @@ const authenticateToken = async (req, res, next) => {
                 message: '无效的token'
             });
         }
-        
+
         if (error.name === 'TokenExpiredError') {
             return res.status(401).json({
                 status: 'error',
@@ -117,7 +126,7 @@ const optionalAuth = async (req, res, next) => {
                 req.user = users[0];
             }
         }
-        
+
         next();
     } catch (error) {
         // 可选认证失败时不返回错误，继续执行

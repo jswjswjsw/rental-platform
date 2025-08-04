@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>支付按钮测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #409eff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            min-width: 120px;
+        }
+        .test-button:hover {
+            background: #66b1ff;
+        }
+        .test-button:disabled {
+            background: #c0c4cc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #f0f9ff;
+            border: 1px solid #409eff;
+            color: #409eff;
+        }
+        .error {
+            background: #fef0f0;
+            border: 1px solid #f56c6c;
+            color: #f56c6c;
+        }
+        .info {
+            background: #f4f4f5;
+            border: 1px solid #909399;
+            color: #606266;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔧 支付按钮功能测试</h1>
+        <p>这个页面用来测试支付按钮的基本功能是否正常</p>
+        
+        <h3>1. 基础按钮测试</h3>
+        <button class="test-button" onclick="testBasicClick()">基础点击测试</button>
+        <button class="test-button" onclick="testAsyncFunction()">异步函数测试</button>
+        <button class="test-button" onclick="testApiCall()">API调用测试</button>
+        
+        <h3>2. 支付流程模拟</h3>
+        <button class="test-button" id="payButton" onclick="simulatePayment()">模拟支付流程</button>
+        <button class="test-button" onclick="testEnvironmentCheck()">环境检查</button>
+        
+        <h3>3. 错误情况测试</h3>
+        <button class="test-button" onclick="testErrorHandling()">错误处理测试</button>
+        <button class="test-button" onclick="testNetworkError()">网络错误测试</button>
+        
+        <div id="result" class="result info">点击上方按钮开始测试...</div>
+    </div>
+
+    <script>
+        let testResults = [];
+        
+        function updateResult(message, type = 'info') {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type}`;
+            resultDiv.textContent = message;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        function testBasicClick() {
+            updateResult('✅ 基础点击功能正常！\n按钮可以响应点击事件。', 'success');
+            testResults.push('基础点击: ✅');
+        }
+        
+        async function testAsyncFunction() {
+            updateResult('⏳ 测试异步函数...', 'info');
+            
+            try {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                updateResult('✅ 异步函数测试成功！\n异步操作可以正常执行。', 'success');
+                testResults.push('异步函数: ✅');
+            } catch (error) {
+                updateResult(`❌ 异步函数测试失败：${error.message}`, 'error');
+                testResults.push('异步函数: ❌');
+            }
+        }
+        
+        async function testApiCall() {
+            updateResult('⏳ 测试API调用...', 'info');
+            
+            try {
+                const response = await fetch('/api/health', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    updateResult(`✅ API调用成功！\n状态码: ${response.status}\n响应: ${JSON.stringify(data, null, 2)}`, 'success');
+                    testResults.push('API调用: ✅');
+                } else {
+                    updateResult(`⚠️ API调用返回错误状态码: ${response.status}`, 'error');
+                    testResults.push('API调用: ⚠️');
+                }
+            } catch (error) {
+                updateResult(`❌ API调用失败：${error.message}\n可能原因：后端服务未启动或网络问题`, 'error');
+                testResults.push('API调用: ❌');
+            }
+        }
+        
+        async function simulatePayment() {
+            const button = document.getElementById('payButton');
+            button.disabled = true;
+            button.textContent = '支付中...';
+            
+            updateResult('⏳ 模拟支付流程...\n1. 检查支付条件\n2. 创建支付订单\n3. 调用支付接口', 'info');
+            
+            try {
+                // 模拟支付流程
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                updateResult('📝 创建支付订单...', 'info');
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                updateResult('💳 调用支付接口...', 'info');
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // 模拟成功
+                if (Math.random() > 0.3) {
+                    updateResult('✅ 支付流程模拟成功！\n所有步骤都正常执行。', 'success');
+                    testResults.push('支付流程: ✅');
+                } else {
+                    throw new Error('模拟支付失败');
+                }
+                
+            } catch (error) {
+                updateResult(`❌ 支付流程失败：${error.message}`, 'error');
+                testResults.push('支付流程: ❌');
+            } finally {
+                button.disabled = false;
+                button.textContent = '模拟支付流程';
+            }
+        }
+        
+        function testEnvironmentCheck() {
+            const env = {
+                userAgent: navigator.userAgent,
+                isWechat: navigator.userAgent.toLowerCase().includes('micromessenger'),
+                isDev: window.location.hostname === 'localhost',
+                hasLocalStorage: typeof localStorage !== 'undefined',
+                hasConsole: typeof console !== 'undefined',
+                hasPromise: typeof Promise !== 'undefined'
+            };
+            
+            updateResult(`🔍 环境检查结果：
+用户代理: ${env.userAgent}
+微信环境: ${env.isWechat ? '是' : '否'}
+开发环境: ${env.isDev ? '是' : '否'}
+本地存储: ${env.hasLocalStorage ? '支持' : '不支持'}
+控制台: ${env.hasConsole ? '支持' : '不支持'}
+Promise: ${env.hasPromise ? '支持' : '不支持'}`, 'info');
+            
+            testResults.push('环境检查: ✅');
+        }
+        
+        async function testErrorHandling() {
+            updateResult('⏳ 测试错误处理...', 'info');
+            
+            try {
+                // 故意抛出错误
+                throw new Error('这是一个测试错误');
+            } catch (error) {
+                updateResult(`✅ 错误处理正常！\n捕获到错误: ${error.message}`, 'success');
+                testResults.push('错误处理: ✅');
+            }
+        }
+        
+        async function testNetworkError() {
+            updateResult('⏳ 测试网络错误处理...', 'info');
+            
+            try {
+                // 请求一个不存在的地址
+                await fetch('/api/nonexistent', {
+                    method: 'GET',
+                    timeout: 3000
+                });
+            } catch (error) {
+                updateResult(`✅ 网络错误处理正常！\n错误类型: ${error.name}\n错误信息: ${error.message}`, 'success');
+                testResults.push('网络错误: ✅');
+            }
+        }
+        
+        // 页面加载完成后显示说明
+        window.addEventListener('load', () => {
+            console.log('🔧 支付按钮测试页面已加载');
+            console.log('💡 请按顺序点击测试按钮');
+            
+            // 5秒后显示测试总结
+            setTimeout(() => {
+                if (testResults.length > 0) {
+                    const summary = `📊 测试总结：\n${testResults.join('\n')}`;
+                    console.log(summary);
+                }
+            }, 5000);
+        });
+        
+        // 监听所有点击事件
+        document.addEventListener('click', (event) => {
+            if (event.target.tagName === 'BUTTON') {
+                console.log('🖱️ 按钮点击事件:', event.target.textContent);
+            }
+        });
+        
+        // 监听所有错误
+        window.addEventListener('error', (event) => {
+            console.error('🚨 页面错误:', event.error);
+            updateResult(`🚨 页面错误: ${event.error.message}`, 'error');
+        });
+    </script>
+</body>
+</html>

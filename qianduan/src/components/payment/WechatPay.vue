@@ -142,6 +142,10 @@ export default {
 
     // 创建支付订单
     const createPayment = async () => {
+      console.log('📝 开始创建支付订单', {
+        orderId: props.order.id,
+        paymentType: props.paymentType
+      });
       try {
         const tradeType = isWechat() ? 'JSAPI' : 'H5'
         
@@ -175,7 +179,7 @@ export default {
       return new Promise((resolve, reject) => {
         if (typeof window.WeixinJSBridge === 'undefined') {
           // 如果不在微信环境中，模拟支付成功（开发测试用）
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.DEV) {
             console.warn('开发环境：模拟微信支付成功')
             setTimeout(() => resolve({ err_msg: 'get_brand_wcpay_request:ok' }), 2000)
             return
@@ -246,7 +250,16 @@ export default {
 
     // 主支付处理函数
     const handlePay = async () => {
-      if (paying.value) return
+      console.log('🔄 支付按钮被点击', { 
+        paymentType: props.paymentType, 
+        orderId: props.order?.id,
+        paying: paying.value 
+      });
+      
+      if (paying.value) {
+        console.log('⚠️ 支付正在进行中，忽略重复点击');
+        return;
+      }
 
       try {
         paying.value = true
