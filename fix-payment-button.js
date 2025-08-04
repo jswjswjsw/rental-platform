@@ -147,8 +147,14 @@ function addDebugLogs() {
 function improveErrorHandling() {
     console.log('🔧 优化错误处理...');
     
-    const filePath = path.join(__dirname, 'qianduan/src/components/payment/WechatPay.vue');
-    let content = fs.readFileSync(filePath, 'utf8');
+    const filePath = getWechatPayPath();
+    if (!filePath) {
+        console.log('❌ WechatPay组件文件不存在');
+        return false;
+    }
+    
+    try {
+        let content = fs.readFileSync(filePath, 'utf8');
     
     // 改进错误处理逻辑
     const oldErrorHandling = `      } catch (error) {
@@ -187,15 +193,19 @@ function improveErrorHandling() {
         paying.value = false;
       }`;
     
-    if (content.includes(oldErrorHandling)) {
-        content = content.replace(oldErrorHandling, newErrorHandling);
-        fs.writeFileSync(filePath, content);
-        console.log('✅ 错误处理优化完成');
-    } else {
-        console.log('⚠️ 未找到需要优化的错误处理代码');
+        if (content.includes(oldErrorHandling)) {
+            content = content.replace(oldErrorHandling, newErrorHandling);
+            fs.writeFileSync(filePath, content);
+            console.log('✅ 错误处理优化完成');
+        } else {
+            console.log('⚠️ 未找到需要优化的错误处理代码');
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('❌ 优化错误处理失败:', error.message);
+        return false;
     }
-    
-    return true;
 }
 
 /**
@@ -481,6 +491,14 @@ export default {
 </style>`;
 
     const testFilePath = path.join(__dirname, 'qianduan/src/components/payment/TestPayment.vue');
+    
+    // 确保目录存在
+    const testDir = path.dirname(testFilePath);
+    if (!fs.existsSync(testDir)) {
+        fs.mkdirSync(testDir, { recursive: true });
+        console.log(`✅ 创建目录: ${testDir}`);
+    }
+    
     fs.writeFileSync(testFilePath, testComponent);
     console.log('✅ 测试支付组件创建完成: TestPayment.vue');
     
