@@ -74,9 +74,10 @@ export default defineConfig({
     /**
      * 开发服务器端口
      * 前端应用将在 http://localhost:8080 运行
+     * 生产环境应使用 npm run build 构建静态文件
      */
     port: 8080,
-    host: '0.0.0.0', // 监听所有网络接口
+    host: '0.0.0.0', // 监听所有网络接口，允许局域网访问
 
     /**
      * API代理配置
