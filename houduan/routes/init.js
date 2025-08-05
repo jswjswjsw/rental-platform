@@ -5,7 +5,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { promisePool } = require('../config/database');
+const { promisePool } = require('../config/database-config');
 
 /**
  * 初始化数据库表结构
