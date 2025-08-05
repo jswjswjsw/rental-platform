@@ -18,7 +18,7 @@
  */
 
 const express = require('express');
-const { promisePool } = require('../config/database');
+const { promisePool } = require('../config/database-config');
 const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();

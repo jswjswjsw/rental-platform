@@ -35,7 +35,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
-const { promisePool } = require('../config/database');
+const { promisePool } = require('../config/database-config');
 const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();

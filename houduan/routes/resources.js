@@ -38,7 +38,7 @@
 
 const express = require('express');
 const Joi = require('joi');
-const { promisePool } = require('../config/database');
+const { promisePool } = require('../config/database-config');
 const { authenticateToken, optionalAuth, checkResourceOwnership } = require('../middleware/auth');
 const { uploadMultiple, deleteFile } = require('../middleware/upload');
 const path = require('path');

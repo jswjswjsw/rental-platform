@@ -29,7 +29,7 @@
  */
 
 const express = require('express');
-const { promisePool } = require('../config/database');
+const { promisePool } = require('../config/database-config');
 
 const router = express.Router();
 

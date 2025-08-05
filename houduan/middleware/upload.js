@@ -64,16 +64,115 @@ const storage = multer.diskStorage({
     }
 });
 
-// 文件过滤器
+// 文件过滤器（增强安全验证）
 const fileFilter = (req, file, cb) => {
     // 允许的图片类型
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
     
-    if (allowedTypes.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
+    // MIME类型检查
+    if (!allowedTypes.includes(file.mimetype)) {
         cb(new Error('只允许上传图片文件 (JPEG, PNG, GIF, WebP)'), false);
+        return;
     }
+    
+    // 文件扩展名检查
+    const ext = path.extname(file.originalname).toLowerCase();
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    
+    if (!allowedExtensions.includes(ext)) {
+        cb(new Error('文件扩展名不被允许'), false);
+        return;
+    }
+    
+    cb(null, true);
+};
+
+// 文件头验证函数（验证文件魔数）
+const validateFileHeader = (buffer) => {
+    const fileSignatures = {
+        jpg: [0xFF, 0xD8, 0xFF],
+        jpeg: [0xFF, 0xD8, 0xFF],
+        png: [0x89, 0x50, 0x4E, 0x47],
+        gif: [0x47, 0x49, 0x46],
+        webp: [0x52, 0x49, 0x46, 0x46]
+    };
+    
+    for (const [type, signature] of Object.entries(fileSignatures)) {
+        if (signature.every((byte, index) => buffer[index] === byte)) {
+            return type;
+        }
+    }
+    
+    return null;
+};
+
+// 增强的文件验证中间件
+const validateFileContent = (req, res, next) => {
+    if (req.file) {
+        // 单文件验证
+        const filePath = req.file.path;
+        const buffer = fs.readFileSync(filePath);
+        
+        // 验证文件头
+        if (buffer.length < 10) {
+            fs.unlinkSync(filePath); // 删除无效文件
+            return res.status(400).json({
+                status: 'error',
+                message: '文件内容无效'
+            });
+        }
+        
+        const detectedType = validateFileHeader(buffer);
+        if (!detectedType) {
+            fs.unlinkSync(filePath); // 删除无效文件
+            return res.status(400).json({
+                status: 'error',
+                message: '文件类型验证失败，非有效图片文件'
+            });
+        }
+        
+        // 添加检测到的文件类型到请求对象
+        req.file.detectedType = detectedType;
+    }
+    
+    if (req.files && req.files.length > 0) {
+        // 多文件验证
+        const invalidFiles = [];
+        
+        for (const file of req.files) {
+            const buffer = fs.readFileSync(file.path);
+            
+            if (buffer.length < 10) {
+                invalidFiles.push(file);
+                continue;
+            }
+            
+            const detectedType = validateFileHeader(buffer);
+            if (!detectedType) {
+                invalidFiles.push(file);
+            } else {
+                file.detectedType = detectedType;
+            }
+        }
+        
+        // 删除无效文件
+        if (invalidFiles.length > 0) {
+            invalidFiles.forEach(file => {
+                try {
+                    fs.unlinkSync(file.path);
+                } catch (err) {
+                    console.error('删除无效文件失败:', err);
+                }
+            });
+            
+            return res.status(400).json({
+                status: 'error',
+                message: `发现${invalidFiles.length}个无效文件，已自动删除`
+            });
+        }
+    }
+    
+    next();
 };
 
 // 创建multer实例
@@ -165,5 +264,6 @@ const deleteFile = (filePath) => {
 module.exports = {
     uploadSingle,
     uploadMultiple,
+    validateFileContent,
     deleteFile
 };
