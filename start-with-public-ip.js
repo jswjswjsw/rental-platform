@@ -35,6 +35,13 @@ const vite = spawn('npx', ['vite', '--port', PORT, '--host', '0.0.0.0'], {
   shell: true
 });
 
+// 处理spawn错误
+vite.on('error', (error) => {
+  console.error(colors.yellow('❌ 启动Vite失败:'), error.message);
+  console.log(colors.gray('请确保已安装依赖: npm install'));
+  process.exit(1);
+});
+
 let serverStarted = false;
 
 vite.stdout.on('data', (data) => {
@@ -46,12 +53,14 @@ vite.stdout.on('data', (data) => {
     
     // 自定义输出
     console.log('');
-    console.log(chalk.green('  VITE v4.5.14') + chalk.gray('  ready in') + ' ' + output.match(/ready in (\d+ms)/)?.[1] || '');
+    // Extract version from output or use generic message
+    const viteVersion = output.match(/VITE v([\d.]+)/)?.[1] || 'latest';
+    console.log(colors.green(`  VITE v${viteVersion}`) + colors.gray('  ready in') + ' ' + (output.match(/ready in (\d+ms)/)?.[1] || ''));
     console.log('');
-    console.log(chalk.green('  ➜') + '  ' + chalk.bold('Local:') + '   ' + chalk.cyan(`http://localhost:${PORT}/`));
-    console.log(chalk.green('  ➜') + '  ' + chalk.bold('Network:') + ' ' + chalk.cyan(`http://${PUBLIC_IP}:${PORT}/`));
+    console.log(colors.green('  ➜') + '  ' + colors.bold('Local:') + '   ' + colors.cyan(`http://localhost:${PORT}/`));
+    console.log(colors.green('  ➜') + '  ' + colors.bold('Network:') + ' ' + colors.cyan(`http://${PUBLIC_IP}:${PORT}/`));
     console.log('');
-    console.log(chalk.gray('  press ') + chalk.bold('h') + chalk.gray(' to show help'));
+    console.log(colors.gray('  press ') + colors.bold('h') + colors.gray(' to show help'));
     console.log('');
   } else if (!output.includes('ready in') && !output.includes('Local:') && !output.includes('Network:')) {
     // 显示其他输出（但过滤掉原始的地址信息）
@@ -64,13 +73,13 @@ vite.stderr.on('data', (data) => {
 });
 
 vite.on('close', (code) => {
-  console.log(chalk.yellow(`\n服务器已停止 (退出码: ${code})`));
+  console.log(colors.yellow(`\n服务器已停止 (退出码: ${code})`));
   process.exit(code);
 });
 
 // 处理Ctrl+C
 process.on('SIGINT', () => {
-  console.log(chalk.yellow('\n正在停止服务器...'));
+  console.log(colors.yellow('\n正在停止服务器...'));
   vite.kill('SIGINT');
 });
 

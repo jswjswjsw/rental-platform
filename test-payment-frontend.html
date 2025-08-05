@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,27 +13,32 @@
             padding: 20px;
             background-color: #f5f5f5;
         }
+
         .container {
             background: white;
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+
         .title {
             color: #333;
             text-align: center;
             margin-bottom: 30px;
         }
+
         .test-section {
             margin-bottom: 30px;
             padding: 20px;
             border: 1px solid #e0e0e0;
             border-radius: 5px;
         }
+
         .test-section h3 {
             color: #409eff;
             margin-top: 0;
         }
+
         .button {
             background: #409eff;
             color: white;
@@ -43,34 +49,42 @@
             font-size: 14px;
             margin: 5px;
         }
+
         .button:hover {
             background: #66b1ff;
         }
+
         .button.success {
             background: #67c23a;
         }
+
         .button.warning {
             background: #e6a23c;
         }
+
         .button.danger {
             background: #f56c6c;
         }
+
         .result {
             margin-top: 15px;
             padding: 10px;
             border-radius: 4px;
             font-family: monospace;
         }
+
         .result.success {
             background: #f0f9ff;
             border: 1px solid #409eff;
             color: #409eff;
         }
+
         .result.error {
             background: #fef0f0;
             border: 1px solid #f56c6c;
             color: #f56c6c;
         }
+
         .status {
             display: inline-block;
             padding: 4px 8px;
@@ -78,20 +92,23 @@
             font-size: 12px;
             margin-left: 10px;
         }
+
         .status.online {
             background: #f0f9ff;
             color: #409eff;
         }
+
         .status.offline {
             background: #fef0f0;
             color: #f56c6c;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1 class="title">🔧 支付功能诊断测试页面</h1>
-        
+
         <div class="test-section">
             <h3>1. 服务状态检查</h3>
             <p>检查前后端服务是否正常运行</p>
@@ -150,19 +167,19 @@
             const resultDiv = document.getElementById('serviceResult');
             resultDiv.style.display = 'block';
             resultDiv.innerHTML = '正在检查服务状态...';
-            
+
             try {
                 // 检查后端服务
                 const backendResponse = await fetch('http://localhost:3000/api/health', {
                     method: 'GET',
                     timeout: 5000
                 });
-                
+
                 const backendStatus = backendResponse.ok ? '✅ 在线' : '❌ 异常';
-                
+
                 // 检查前端服务（当前页面能访问说明前端正常）
                 const frontendStatus = '✅ 在线';
-                
+
                 resultDiv.className = 'result success';
                 resultDiv.innerHTML = `
                     <strong>服务状态检查结果：</strong><br>
@@ -170,9 +187,9 @@
                     前端服务 (8080): <span class="status online">${frontendStatus}</span><br>
                     <br>✅ 服务状态正常，支付按钮应该可以响应
                 `;
-                
+
                 diagnosticResults.services = true;
-                
+
             } catch (error) {
                 resultDiv.className = 'result error';
                 resultDiv.innerHTML = `
@@ -180,10 +197,10 @@
                     错误信息: ${error.message}<br>
                     <br>💡 请确保后端服务已启动 (npm run dev 在 houduan 目录)
                 `;
-                
+
                 diagnosticResults.services = false;
             }
-            
+
             updateDiagnosticSummary();
         }
 
@@ -192,7 +209,7 @@
             const resultDiv = document.getElementById('apiResult');
             resultDiv.style.display = 'block';
             resultDiv.innerHTML = '正在测试API连接...';
-            
+
             try {
                 const response = await fetch('/api/health', {
                     method: 'GET',
@@ -200,9 +217,9 @@
                         'Content-Type': 'application/json'
                     }
                 });
-                
+
                 const data = await response.json();
-                
+
                 resultDiv.className = 'result success';
                 resultDiv.innerHTML = `
                     <strong>✅ API连接成功：</strong><br>
@@ -210,9 +227,9 @@
                     响应数据: ${JSON.stringify(data, null, 2)}<br>
                     <br>✅ 前端可以正常访问后端API
                 `;
-                
+
                 diagnosticResults.api = true;
-                
+
             } catch (error) {
                 resultDiv.className = 'result error';
                 resultDiv.innerHTML = `
@@ -224,10 +241,10 @@
                     3. 网络连接问题<br>
                     4. CORS跨域问题
                 `;
-                
+
                 diagnosticResults.api = false;
             }
-            
+
             updateDiagnosticSummary();
         }
 
@@ -235,9 +252,9 @@
         function simulatePayment() {
             const resultDiv = document.getElementById('paymentResult');
             resultDiv.style.display = 'block';
-            
+
             console.log('🔄 模拟支付按钮点击');
-            
+
             // 模拟支付流程
             setTimeout(() => {
                 resultDiv.className = 'result success';
@@ -252,7 +269,7 @@
                     - 用户未登录<br>
                     - 订单数据缺失
                 `;
-                
+
                 diagnosticResults.payment = true;
                 updateDiagnosticSummary();
             }, 1000);
@@ -262,9 +279,9 @@
         function simulateWechatPay() {
             const resultDiv = document.getElementById('paymentResult');
             resultDiv.style.display = 'block';
-            
+
             console.log('💰 模拟微信支付流程');
-            
+
             // 模拟微信支付API调用
             setTimeout(() => {
                 resultDiv.className = 'result success';
@@ -275,7 +292,7 @@
                     3. 支付状态查询正常<br>
                     <br>🎉 支付功能逻辑正常！
                 `;
-                
+
                 // 模拟支付成功回调
                 console.log('✅ 支付成功回调');
             }, 2000);
@@ -286,7 +303,7 @@
             const resultDiv = document.getElementById('networkResult');
             resultDiv.style.display = 'block';
             resultDiv.innerHTML = '正在测试网络请求...';
-            
+
             try {
                 // 测试多个请求
                 const requests = [
@@ -294,12 +311,12 @@
                     fetch('http://localhost:3000/api/health'),
                     fetch('/api/categories').catch(() => ({ ok: false, status: 401 })) // 可能需要认证
                 ];
-                
+
                 const results = await Promise.allSettled(requests);
-                
+
                 let successCount = 0;
                 let details = '';
-                
+
                 results.forEach((result, index) => {
                     if (result.status === 'fulfilled' && result.value.ok) {
                         successCount++;
@@ -308,26 +325,26 @@
                         details += `❌ 请求 ${index + 1}: 失败<br>`;
                     }
                 });
-                
+
                 resultDiv.className = successCount > 0 ? 'result success' : 'result error';
                 resultDiv.innerHTML = `
                     <strong>网络请求测试结果：</strong><br>
                     ${details}
                     <br>成功率: ${successCount}/${results.length}
                 `;
-                
+
                 diagnosticResults.network = successCount > 0;
-                
+
             } catch (error) {
                 resultDiv.className = 'result error';
                 resultDiv.innerHTML = `
                     <strong>❌ 网络请求测试失败：</strong><br>
                     ${error.message}
                 `;
-                
+
                 diagnosticResults.network = false;
             }
-            
+
             updateDiagnosticSummary();
         }
 
@@ -336,7 +353,7 @@
             console.error('🧪 这是一个测试错误，用于验证控制台是否正常工作');
             console.warn('⚠️ 这是一个测试警告');
             console.log('ℹ️ 这是一个测试日志');
-            
+
             alert('已在控制台生成测试错误，请查看开发者工具的Console标签页');
         }
 
@@ -349,18 +366,18 @@
         // 更新诊断摘要
         function updateDiagnosticSummary() {
             const summaryDiv = document.getElementById('diagnosticSummary');
-            
+
             const results = diagnosticResults;
             const total = Object.values(results).filter(v => v !== null).length;
             const passed = Object.values(results).filter(v => v === true).length;
-            
+
             if (total === 0) {
                 summaryDiv.innerHTML = '<p>点击上方按钮开始诊断...</p>';
                 return;
             }
-            
+
             let summary = `<strong>📊 诊断进度: ${passed}/${total} 项通过</strong><br><br>`;
-            
+
             if (results.services !== null) {
                 summary += `服务状态: ${results.services ? '✅ 正常' : '❌ 异常'}<br>`;
             }
@@ -373,7 +390,7 @@
             if (results.network !== null) {
                 summary += `网络请求: ${results.network ? '✅ 正常' : '❌ 异常'}<br>`;
             }
-            
+
             if (passed === total && total >= 3) {
                 summary += '<br>🎉 <strong>诊断完成！支付功能应该可以正常工作。</strong>';
                 summary += '<br>💡 如果支付按钮仍无响应，请检查：';
@@ -383,7 +400,7 @@
             } else if (total >= 3) {
                 summary += '<br>⚠️ <strong>发现问题，请根据上方错误信息进行修复。</strong>';
             }
-            
+
             summaryDiv.innerHTML = summary;
         }
 
@@ -394,4 +411,5 @@
         });
     </script>
 </body>
+
 </html>

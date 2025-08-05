@@ -47,7 +47,7 @@ function parseConnectionConfig() {
         const parsed = parseInt(port);
         return (parsed && parsed > 0 && parsed <= 65535) ? parsed : null;
     };
-    
+
     if (process.env.DATABASE_URL) {
         // 解析DATABASE_URL格式: mysql://user:password@host:port/database
         const url = new URL(process.env.DATABASE_URL);
@@ -96,7 +96,7 @@ if (!poolConfig.host || !poolConfig.user || !poolConfig.password || !poolConfig.
     if (!poolConfig.password) console.error('   - DB_PASSWORD 未设置');
     if (!poolConfig.database) console.error('   - DB_NAME 未设置');
     console.error('💡 请检查 houduan/.env 文件配置');
-    
+
     // 在生产环境中抛出错误而不是直接退出进程
     if (process.env.NODE_ENV === 'production') {
         throw new Error('Database configuration is incomplete');
@@ -123,9 +123,9 @@ pool.on('connection', function (connection) {
     console.log('🔗 新的数据库连接建立: ' + connection.threadId);
 });
 
-pool.on('error', function(err) {
+pool.on('error', function (err) {
     console.error('❌ 数据库连接池错误:', err);
-    if(err.code === 'PROTOCOL_CONNECTION_LOST') {
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
         console.log('🔄 数据库连接丢失，尝试重新连接...');
     } else {
         throw err;
@@ -144,12 +144,12 @@ async function testConnection() {
         console.log('🔍 正在测试阿里云RDS连接...');
         const connection = await promisePool.getConnection();
         console.log('✅ 阿里云RDS连接成功');
-        
+
         // 获取数据库版本信息
         const [rows] = await connection.execute('SELECT VERSION() as version, NOW() as server_time');
         console.log(`📊 MySQL版本: ${rows[0].version}`);
         console.log(`⏰ 服务器时间: ${rows[0].server_time}`);
-        
+
         connection.release();
         return true;
     } catch (error) {
@@ -199,11 +199,11 @@ async function testConnection() {
                 console.error('   3. 确认RDS实例规格和配置');
                 console.error('   4. 联系阿里云技术支持');
         }
-        
+
         console.error('\n🔗 相关文档:');
         console.error('   - RDS白名单设置: https://help.aliyun.com/document_detail/43185.html');
         console.error('   - ECS连接RDS: https://help.aliyun.com/document_detail/26128.html');
-        
+
         return false;
     }
 }
