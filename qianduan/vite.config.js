@@ -28,14 +28,17 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const isMobile = mode === 'mobile';
+  
+  return {
   // ==================== 基础配置 ====================
   
   /**
    * 基础路径配置
-   * 生产环境下的资源路径前缀
+   * 移动端需要相对路径，Web端使用绝对路径
    */
-  base: '/',
+  base: isMobile ? './' : '/',
 
   // ==================== 插件配置 ====================
 
@@ -81,19 +84,10 @@ export default defineConfig({
 
     /**
      * API代理配置
-     * 将前端的/api请求代理到后端服务器
-     * 
-     * 代理规则：
-     * - 前端请求：http://localhost:8080/api/users
-     * - 实际请求：http://localhost:3000/api/users
-     * - 前端请求：http://localhost:8080/uploads/image.jpg
-     * - 实际请求：http://localhost:3000/uploads/image.jpg
-     * 
-     * 配置说明：
-     * - target: 后端服务器地址
-     * - changeOrigin: 修改请求头中的origin字段
+     * 移动端不需要代理，直接请求API服务器
+     * Web开发环境使用代理避免CORS问题
      */
-    proxy: {
+    proxy: isMobile ? {} : {
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true
@@ -122,5 +116,6 @@ export default defineConfig({
      * CSS、JS、图片等资源文件将放在assets目录下
      */
     assetsDir: 'assets'
+  }
   }
 })

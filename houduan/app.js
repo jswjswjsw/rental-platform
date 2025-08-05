@@ -40,6 +40,7 @@ const orderRoutes = require('./routes/orders');
 const reviewRoutes = require('./routes/reviews');
 const favoriteRoutes = require('./routes/favorites');
 const paymentRoutes = require('./routes/payments');
+const uploadRoutes = require('./routes/upload');
 
 // 安全中间件
 app.use(helmet());
@@ -47,7 +48,19 @@ app.use(helmet());
 // 跨域配置
 app.use(cors({
     origin: process.env.NODE_ENV === 'production' 
-        ? ['http://localhost:8080', 'http://116.62.44.24:8080', 'http://116.62.44.24'] // 生产环境允许的域名
+        ? [
+            'http://localhost:8080', 
+            'http://116.62.44.24:8080', 
+            'http://116.62.44.24',
+            'capacitor://localhost',  // Capacitor iOS
+            'https://localhost',      // Capacitor Android
+            'ionic://localhost',      // Ionic/Capacitor fallback
+            'http://localhost',       // Additional fallback
+            'https://localhost:8080', // HTTPS development
+            'file://',               // Capacitor file protocol
+            'capacitor-electron://',  // Capacitor Electron
+            'tauri://'               // Tauri framework
+          ]
         : true, // 开发环境允许所有域名
     credentials: true
 }));
@@ -78,6 +91,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // 数据库初始化路由（临时）
 const initRoutes = require('./routes/init');

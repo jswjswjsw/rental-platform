@@ -1,0 +1,133 @@
+/* 移动端专用样式 */
+
+/* 移动端基础样式 */
+.mobile-platform {
+  /* 防止页面缩放 */
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 移动端安全区域适配 */
+.mobile-platform .app-header {
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.mobile-platform .app-footer {
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* 移动端按钮优化 */
+.mobile-platform .el-button {
+  min-height: 44px; /* iOS推荐的最小触摸区域 */
+  font-size: 16px;
+}
+
+/* 移动端输入框优化 */
+.mobile-platform .el-input__inner {
+  font-size: 16px; /* 防止iOS自动缩放 */
+  min-height: 44px;
+}
+
+/* 移动端卡片间距优化 */
+.mobile-platform .resource-card {
+  margin: 8px;
+  border-radius: 12px;
+}
+
+/* 移动端导航优化 */
+.mobile-platform .el-menu--horizontal {
+  display: none; /* 隐藏水平导航 */
+}
+
+.mobile-platform .mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  z-index: 1000;
+}
+
+.mobile-platform .mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  color: #666;
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.mobile-platform .mobile-nav-item.active {
+  color: #409EFF;
+}
+
+.mobile-platform .mobile-nav-item .icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+/* 移动端页面内容区域 */
+.mobile-platform .main-content {
+  padding-bottom: 70px; /* 为底部导航留出空间 */
+}
+
+/* 移动端图片优化 */
+.mobile-platform .resource-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* 移动端表单优化 */
+.mobile-platform .el-form {
+  padding: 16px;
+}
+
+.mobile-platform .el-form-item {
+  margin-bottom: 20px;
+}
+
+/* 移动端弹窗优化 */
+.mobile-platform .el-dialog {
+  width: 90% !important;
+  margin: 5vh auto;
+}
+
+/* 移动端加载状态 */
+.mobile-platform .loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+/* 响应式断点 */
+@media (max-width: 768px) {
+  .web-platform .desktop-only {
+    display: none;
+  }
+  
+  .web-platform .container {
+    padding: 0 16px;
+  }
+  
+  .web-platform .el-row {
+    margin: 0 -8px;
+  }
+  
+  .web-platform .el-col {
+    padding: 0 8px;
+  }
+}

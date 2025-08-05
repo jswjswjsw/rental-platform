@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>下载移动端应用 - 闲置资源租赁平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .download-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .app-icon {
+            width: 120px;
+            height: 120px;
+            background: #409EFF;
+            border-radius: 25px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: white;
+        }
+        
+        .app-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .app-subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .download-btn {
+            display: inline-block;
+            background: #409EFF;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(64, 158, 255, 0.3);
+        }
+        
+        .download-btn:hover {
+            background: #337ecc;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(64, 158, 255, 0.4);
+        }
+        
+        .download-btn i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .version-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        
+        .version-info h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            text-align: left;
+        }
+        
+        .feature-list li {
+            padding: 5px 0;
+            color: #666;
+        }
+        
+        .feature-list li:before {
+            content: "✓";
+            color: #409EFF;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .system-requirements {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .system-requirements h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .system-requirements p {
+            color: #856404;
+            font-size: 14px;
+        }
+        
+        .qr-code {
+            margin: 20px 0;
+        }
+        
+        .qr-code img {
+            width: 150px;
+            height: 150px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+        }
+        
+        .install-steps {
+            text-align: left;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .install-steps h4 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .install-steps ol {
+            color: #666;
+            padding-left: 20px;
+        }
+        
+        .install-steps li {
+            margin: 8px 0;
+        }
+        
+        @media (max-width: 600px) {
+            .download-container {
+                padding: 30px 20px;
+            }
+            
+            .app-title {
+                font-size: 24px;
+            }
+            
+            .download-btn {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="download-container">
+        <div class="app-icon">📱</div>
+        
+        <h1 class="app-title">闲置资源租赁平台</h1>
+        <p class="app-subtitle">让闲置资源发挥最大价值</p>
+        
+        <!-- 下载按钮 -->
+        <a href="/downloads/租赁平台-v1.0.0.apk" download="租赁平台.apk" class="download-btn">
+            <i>🤖</i>下载Android应用
+        </a>
+        
+        <!-- 版本信息 -->
+        <div class="version-info">
+            <h3>📋 版本 1.0.0 新特性</h3>
+            <ul class="feature-list">
+                <li>完整的租赁平台功能</li>
+                <li>原生相机拍照上传</li>
+                <li>地理位置定位服务</li>
+                <li>流畅的移动端体验</li>
+                <li>安全的用户认证系统</li>
+                <li>实时订单状态跟踪</li>
+            </ul>
+        </div>
+        
+        <!-- 系统要求 -->
+        <div class="system-requirements">
+            <h4>📋 系统要求</h4>
+            <p>Android 7.0 (API Level 24) 及以上版本</p>
+            <p>建议可用存储空间: 50MB</p>
+        </div>
+        
+        <!-- 二维码下载 -->
+        <div class="qr-code">
+            <p style="margin-bottom: 10px; color: #666;">扫码下载</p>
+            <!-- 这里可以放置二维码图片 -->
+            <div style="width: 150px; height: 150px; background: #f0f0f0; border-radius: 10px; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: #999;">
+                二维码
+            </div>
+        </div>
+        
+        <!-- 安装步骤 -->
+        <div class="install-steps">
+            <h4>📱 安装步骤</h4>
+            <ol>
+                <li>点击上方下载按钮下载APK文件</li>
+                <li>在设置中启用"未知来源"应用安装</li>
+                <li>打开下载的APK文件进行安装</li>
+                <li>安装完成后即可使用</li>
+            </ol>
+        </div>
+        
+        <!-- 联系信息 -->
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+            <p style="color: #999; font-size: 14px;">
+                如有问题，请联系客服<br>
+                或访问 <a href="/" style="color: #409EFF;">网页版</a>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // 检测用户设备
+        function detectDevice() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isAndroid = userAgent.indexOf('android') > -1;
+            const isIOS = /ipad|iphone|ipod/.test(userAgent);
+            
+            if (isIOS) {
+                document.querySelector('.download-btn').innerHTML = 
+                    '<i>🍎</i>iOS版本即将推出';
+                document.querySelector('.download-btn').style.background = '#ccc';
+                document.querySelector('.download-btn').style.cursor = 'not-allowed';
+                document.querySelector('.download-btn').onclick = function(e) {
+                    e.preventDefault();
+                    alert('iOS版本正在开发中，敬请期待！');
+                };
+            }
+        }
+        
+        // 页面加载完成后检测设备
+        document.addEventListener('DOMContentLoaded', detectDevice);
+        
+        // 下载统计
+        document.querySelector('.download-btn').addEventListener('click', function() {
+            // 这里可以添加下载统计代码
+            console.log('APK下载开始');
+        });
+    </script>
+</body>
+</html>

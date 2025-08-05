@@ -28,8 +28,11 @@
       <router-view />
     </main>
     
-    <!-- 应用底部信息 -->
-    <AppFooter />
+    <!-- 桌面端底部信息 -->
+    <AppFooter v-if="!isMobile" />
+    
+    <!-- 移动端底部导航 -->
+    <MobileNavigation v-if="isMobile" />
   </div>
 </template>
 
@@ -40,16 +43,44 @@
  * 使用Vue3 Composition API
  * 导入布局组件：头部导航和底部信息
  */
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
+import { Capacitor } from '@capacitor/core'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
+import MobileNavigation from '@/components/mobile/MobileNavigation.vue'
 import { useUserStore } from '@/stores/user'
 
 const userStore = useUserStore()
+const isMobile = ref(false)
 
-// 应用启动时检查认证状态
+// 窗口大小变化处理函数
+const handleResize = () => {
+  isMobile.value = Capacitor.isNativePlatform() || window.innerWidth <= 768
+}
+
+// 应用启动时检查认证状态和平台类型
 onMounted(async () => {
   await userStore.checkAuth()
+  
+  // 检测移动端
+  handleResize()
+  
+  // 监听窗口大小变化
+  window.addEventListener('resize', handleResize)
+  
+  // 添加移动端样式类
+  if (isMobile.value) {
+    document.body.classList.add('mobile-platform')
+    // 动态导入移动端样式
+    import('@/styles/mobile.css').catch(console.warn)
+  } else {
+    document.body.classList.add('web-platform')
+  }
+})
+
+// 清理事件监听器
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
 })
 </script>
 

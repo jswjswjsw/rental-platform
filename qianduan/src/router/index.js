@@ -40,6 +40,7 @@ const Login = () => import('@/views/Login.vue')
 const Register = () => import('@/views/Register.vue')
 const Help = () => import('@/views/Help.vue')
 const Payment = () => import('@/views/Payment.vue')
+const MobileTest = () => import('@/views/MobileTest.vue')
 const NotFound = () => import('@/views/NotFound.vue')
 
 const routes = [
@@ -146,6 +147,14 @@ const routes = [
     component: Help,
     meta: {
       title: '帮助中心'
+    }
+  },
+  {
+    path: '/mobile-test',
+    name: 'MobileTest',
+    component: MobileTest,
+    meta: {
+      title: '移动端测试'
     }
   },
   {

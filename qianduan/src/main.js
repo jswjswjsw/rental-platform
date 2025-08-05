@@ -34,6 +34,17 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import router from './router'
 import App from './App.vue'
 import './style.css'
+// Import mobile styles conditionally based on platform
+if (typeof window !== 'undefined') {
+  import('./styles/mobile.css').catch(() => {
+    // Mobile styles not critical for web platform
+  })
+}
+
+// Capacitor imports for mobile functionality
+import { Capacitor } from '@capacitor/core'
+import { StatusBar, Style } from '@capacitor/status-bar'
+import { SplashScreen } from '@capacitor/splash-screen'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -47,4 +58,33 @@ app.use(pinia)
 app.use(router)
 app.use(ElementPlus)
 
+// Mobile platform initialization
+const initializeApp = async () => {
+  try {
+    if (Capacitor.isNativePlatform()) {
+      // Configure status bar for mobile
+      if (Capacitor.isPluginAvailable('StatusBar')) {
+        await StatusBar.setStyle({ style: Style.Dark })
+      }
+      
+      // Hide splash screen after app loads
+      if (Capacitor.isPluginAvailable('SplashScreen')) {
+        await SplashScreen.hide()
+      }
+      
+      // Add mobile-specific classes
+      document.body.classList.add('mobile-platform')
+    } else {
+      document.body.classList.add('web-platform')
+    }
+  } catch (error) {
+    console.warn('Mobile initialization failed:', error)
+    // Fallback to web platform
+    document.body.classList.add('web-platform')
+  }
+}
+
 app.mount('#app')
+
+// Initialize mobile features after app mounts
+initializeApp()

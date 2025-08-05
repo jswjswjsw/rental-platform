@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">闲置资源租赁</string>
+    <string name="title_activity_main">闲置资源租赁</string>
+    <string name="package_name">com.rental.platform</string>
+    <string name="custom_url_scheme">com.rental.platform</string>
+</resources>

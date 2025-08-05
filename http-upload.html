@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件上传工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .upload-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .drag-area {
+            border: 2px dashed #409EFF;
+            border-radius: 10px;
+            padding: 50px;
+            text-align: center;
+            margin: 20px 0;
+            background: #f8f9ff;
+        }
+        .drag-area.dragover {
+            background: #e6f7ff;
+            border-color: #1890ff;
+        }
+        .file-input {
+            display: none;
+        }
+        .upload-btn {
+            background: #409EFF;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .upload-btn:hover {
+            background: #337ecc;
+        }
+        .file-list {
+            margin-top: 20px;
+        }
+        .file-item {
+            padding: 10px;
+            background: #f0f0f0;
+            margin: 5px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .progress {
+            width: 100%;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #409EFF;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <h1>📤 文件上传到ECS服务器</h1>
+        <p>将 dual-platform-deploy 文件夹打包成ZIP文件，然后上传</p>
+        
+        <div class="drag-area" id="dragArea">
+            <p>📁 拖拽ZIP文件到这里，或点击选择文件</p>
+            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                选择文件
+            </button>
+        </div>
+        
+        <input type="file" id="fileInput" class="file-input" accept=".zip" multiple>
+        
+        <div class="file-list" id="fileList"></div>
+        
+        <div style="margin-top: 30px;">
+            <h3>📋 上传步骤：</h3>
+            <ol>
+                <li>将 <code>dual-platform-deploy</code> 文件夹压缩成ZIP文件</li>
+                <li>使用上面的工具上传ZIP文件</li>
+                <li>在服务器上解压文件</li>
+                <li>启动网站服务</li>
+            </ol>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 5px;">
+            <strong>💡 提示：</strong>
+            <p>如果上传失败，可以使用以下替代方案：</p>
+            <ul>
+                <li>使用阿里云控制台的VNC连接</li>
+                <li>使用FTP工具（如FileZilla）</li>
+                <li>直接在服务器上用git拉取代码</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const dragArea = document.getElementById('dragArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+
+        // 拖拽功能
+        dragArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dragArea.classList.add('dragover');
+        });
+
+        dragArea.addEventListener('dragleave', () => {
+            dragArea.classList.remove('dragover');
+        });
+
+        dragArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dragArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            fileList.innerHTML = '';
+            for (let file of files) {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span>📦 ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                    <button onclick="uploadFile(this, '${file.name}')" class="upload-btn">上传</button>
+                `;
+                fileList.appendChild(fileItem);
+            }
+        }
+
+        async function uploadFile(button, fileName) {
+            button.innerHTML = '上传中...';
+            button.disabled = true;
+            
+            try {
+                const fileInput = document.getElementById('fileInput');
+                const file = Array.from(fileInput.files).find(f => f.name === fileName);
+                
+                if (!file) {
+                    throw new Error('文件未找到');
+                }
+                
+                // 文件大小限制 (100MB)
+                if (file.size > 100 * 1024 * 1024) {
+                    throw new Error('文件大小不能超过100MB');
+                }
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const response = await fetch('/api/upload/deployment', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`上传失败: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                button.innerHTML = '上传成功';
+                button.style.background = '#67C23A';
+                
+                // 显示成功信息
+                const successMsg = document.createElement('div');
+                successMsg.style.cssText = 'color: #67C23A; margin-top: 10px; font-size: 14px;';
+                successMsg.textContent = `✅ ${fileName} 上传成功`;
+                button.parentElement.appendChild(successMsg);
+                
+            } catch (error) {
+                console.error('上传失败:', error);
+                button.innerHTML = '上传失败';
+                button.style.background = '#F56C6C';
+                
+                // 显示错误信息
+                const errorMsg = document.createElement('div');
+                errorMsg.style.cssText = 'color: #F56C6C; margin-top: 10px; font-size: 14px;';
+                errorMsg.textContent = `❌ ${error.message}`;
+                button.parentElement.appendChild(errorMsg);
+                
+                // 3秒后恢复按钮状态
+                setTimeout(() => {
+                    button.innerHTML = '重新上传';
+                    button.style.background = '#409EFF';
+                    button.disabled = false;
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>

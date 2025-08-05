@@ -33,8 +33,8 @@ import { getToken, removeToken } from './index'
 
 // 创建axios实例
 const api = axios.create({
-  baseURL: import.meta.env.PROD 
-    ? `${import.meta.env.VITE_API_BASE_URL}/api`
+  baseURL: import.meta.env.VITE_MOBILE === 'true' || import.meta.env.PROD
+    ? (import.meta.env.VITE_API_BASE_URL || 'http://116.62.44.24:3000/api')
     : '/api',
   timeout: 10000,  // 请求超时时间：10秒
   headers: {
