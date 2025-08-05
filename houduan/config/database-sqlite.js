@@ -60,7 +60,7 @@ async function initializeTables() {
         const createCategoriesTable = `
         CREATE TABLE IF NOT EXISTS categories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name VARCHAR(50) NOT NULL,
+            name VARCHAR(50) UNIQUE NOT NULL,
             description TEXT,
             icon VARCHAR(100),
             sort_order INTEGER DEFAULT 0,
@@ -206,16 +206,31 @@ async function insertDefaultData() {
         let inserted = 0;
         categories.forEach((cat, index) => {
             db.run(
-                'INSERT OR IGNORE INTO categories (name, description, icon, sort_order) VALUES (?, ?, ?, ?)',
-                [cat.name, cat.description, cat.icon, index + 1],
-                (err) => {
-                    if (err && !err.message.includes('UNIQUE constraint failed')) {
-                        console.error('插入分类数据错误:', err.message);
-                    }
-                    inserted++;
-                    if (inserted === categories.length) {
-                        console.log('✅ 默认分类数据初始化完成');
-                        resolve();
+                'INSERT OR REPLACE INTO categories (id, name, description, icon, sort_order) VALUES ((SELECT id FROM categories WHERE name = ? LIMIT 1), ?, ?, ?, ?)',
+                [cat.name, cat.name, cat.description, cat.icon, index + 1],
+                function(err) {
+                    if (err) {
+                        // If the above fails, try a simple INSERT OR IGNORE
+                        db.run(
+                            'INSERT OR IGNORE INTO categories (name, description, icon, sort_order) VALUES (?, ?, ?, ?)',
+                            [cat.name, cat.description, cat.icon, index + 1],
+                            (err2) => {
+                                if (err2 && !err2.message.includes('UNIQUE constraint failed')) {
+                                    console.error('插入分类数据错误:', err2.message);
+                                }
+                                inserted++;
+                                if (inserted === categories.length) {
+                                    console.log('✅ 默认分类数据初始化完成');
+                                    resolve();
+                                }
+                            }
+                        );
+                    } else {
+                        inserted++;
+                        if (inserted === categories.length) {
+                            console.log('✅ 默认分类数据初始化完成');
+                            resolve();
+                        }
                     }
                 }
             );

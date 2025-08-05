@@ -29,6 +29,34 @@ const path = require('path');
 // 加载环境变量配置
 require('dotenv').config();
 
+// 验证关键环境变量
+function validateEnvironment() {
+    const requiredVars = ['JWT_SECRET'];
+    const missingVars = [];
+    
+    for (const varName of requiredVars) {
+        if (!process.env[varName]) {
+            missingVars.push(varName);
+        }
+    }
+    
+    if (missingVars.length > 0) {
+        console.error('❌ 缺少必需的环境变量:', missingVars.join(', '));
+        console.error('💡 请检查 .env 文件配置');
+        process.exit(1);
+    }
+    
+    // 验证JWT_SECRET强度
+    if (process.env.JWT_SECRET.length < 32) {
+        console.warn('⚠️  JWT_SECRET长度不足32位，建议使用更强的密钥');
+    }
+    
+    console.log('✅ 环境变量验证通过');
+}
+
+// 执行环境变量验证
+validateEnvironment();
+
 const app = express();
 
 // 导入路由模块
