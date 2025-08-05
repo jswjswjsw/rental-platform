@@ -1,0 +1,158 @@
+# ECS部署命令 - 支付功能修复
+
+## 在ECS服务器上执行以下命令：
+
+# 1. SSH连接到ECS (请替换为实际IP地址)
+ssh root@YOUR_ECS_IP
+
+# 2. 查找并进入项目目录
+# 常见位置：/root/rental-platform 或 /home/user/rental-platform
+find / -name "rental-platform" -type d 2>/dev/null | head -1
+cd $(find / -name "rental-platform" -type d 2>/dev/null | head -1)
+
+# 或者手动指定路径：
+# cd /root/rental-platform
+
+# 3. 验证当前目录并拉取最新代码
+pwd
+ls -la
+git status
+git pull origin main
+
+# 4. 恢复阿里云RDS配置
+cd houduan
+if [ -f .env.backup ]; then
+    cp .env.backup .env
+    echo "✅ 已恢复阿里云RDS配置"
+else
+    echo "❌ .env.backup 文件不存在，请手动配置.env"
+fi
+
+# 5. 检查并重启服务
+cd ..
+
+# 检查PM2服务状态
+pm2 list
+
+# 重启服务（根据实际服务名调整）
+pm2 restart rental-frontend 2>/dev/null || echo "⚠️ rental-frontend 服务不存在"
+pm2 restart rental-backend 2>/dev/null || echo "⚠️ rental-backend 服务不存在"
+
+# 6. 验证修复效果
+echo "🧪 支付功能测试步骤："
+echo "1. 访问 http://YOUR_ECS_IP:8080"
+echo "2. 注册/登录用户账号"
+echo "3. 创建订单进入支付页面"
+echo "4. 打开浏览器F12开发者工具"
+echo "5. 点击支付按钮，应该看到："
+echo "   🔄 支付按钮被点击 {paymentType: \"rent\", orderId: \"xxx\", paying: false}"
+echo "   📝 开始创建支付订单 {orderId: \"xxx\", paymentType: \"rent\"}"
+
+# 检查关键文件是否存在
+echo "🔍 检查关键文件..."
+[ -f "qianduan/src/components/payment/WechatPay.vue" ] && echo "✅ WechatPay组件存在" || echo "❌ WechatPay组件缺失"
+[ -f "houduan/.env" ] && echo "✅ 后端配置文件存在" || echo "❌ 后端配置文件缺失"
+
+## 如果没有使用PM2，手动重启：
+
+# 查找并停止现有进程
+echo "查找现有Node.js进程..."
+ps aux | grep -E "(npm|node)" | grep -v grep
+
+# 停止前端进程
+pkill -f "npm.*run.*dev" || echo "没有找到前端进程"
+pkill -f "vite" || echo "没有找到Vite进程"
+
+# 重新启动前端（确保logs目录存在）
+mkdir -p logs
+cd qianduan
+nohup npm run dev > ../logs/frontend.log 2>&1 &
+echo "前端服务已启动，PID: $!"
+
+# 返回根目录
+cd ..
+
+## 验证部署成功：
+echo "等待服务启动..."
+sleep 5
+
+echo "检查后端服务..."
+curl -f http://localhost:3000/api/health || echo "❌ 后端服务异常"
+
+echo "检查前端服务..."
+curl -f http://localhost:8080 || echo "❌ 前端服务异常"
+
+echo "检查外网访问..."
+curl -f http://YOUR_ECS_IP:8080 || echo "❌ 外网访问异常，请检查防火墙设置"
+#
+# 故障排除：
+
+### 如果git pull失败：
+```bash
+# 检查Git状态
+git status
+git stash  # 暂存本地修改
+git pull origin main
+git stash pop  # 恢复本地修改
+```
+
+### 如果服务启动失败：
+```bash
+# 检查端口占用
+netstat -tlnp | grep :3000
+netstat -tlnp | grep :8080
+
+# 检查Node.js版本
+node --version
+npm --version
+
+# 检查依赖是否完整
+cd houduan && npm install
+cd ../qianduan && npm install
+```
+
+### 如果数据库连接失败：
+```bash
+# 测试数据库连接
+cd houduan
+node -e "
+const mysql = require('mysql2');
+require('dotenv').config();
+const conn = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
+});
+conn.connect(err => {
+  if (err) console.error('❌ 数据库连接失败:', err.message);
+  else console.log('✅ 数据库连接成功');
+  conn.end();
+});
+"
+```
+
+### 查看服务日志：
+```bash
+# PM2日志
+pm2 logs rental-backend
+pm2 logs rental-frontend
+
+# 手动启动的服务日志
+tail -f logs/frontend.log
+tail -f logs/backend.log
+```
+
+### 重置服务（紧急情况）：
+```bash
+# 停止所有相关进程
+pm2 stop all
+pkill -f node
+pkill -f npm
+
+# 重新启动
+pm2 start ecosystem.config.js
+# 或手动启动
+cd houduan && nohup npm run dev > ../logs/backend.log 2>&1 &
+cd qianduan && nohup npm run dev > ../logs/frontend.log 2>&1 &
+```
