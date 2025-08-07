@@ -36,8 +36,9 @@ import App from './App.vue'
 import './style.css'
 // Import mobile styles conditionally based on platform
 if (typeof window !== 'undefined') {
-  import('./styles/mobile.css').catch(() => {
-    // Mobile styles not critical for web platform
+  import('./styles/mobile.css').catch((error) => {
+    // Mobile styles not critical for web platform, but log for debugging
+    console.warn('Mobile styles not loaded:', error.message)
   })
 }
 

@@ -39,17 +39,17 @@ const deploymentStorage = multer.diskStorage({
 
 // 部署文件过滤器
 const deploymentFileFilter = (req, file, cb) => {
-    // 允许的文件类型
+    // 允许的文件类型 - 更严格的验证
     const allowedTypes = [
         'application/zip',
-        'application/x-zip-compressed',
-        'application/octet-stream'
+        'application/x-zip-compressed'
     ];
-    
+
     const allowedExtensions = ['.zip'];
     const ext = path.extname(file.originalname).toLowerCase();
-    
-    if (allowedTypes.includes(file.mimetype) || allowedExtensions.includes(ext)) {
+
+    // 必须同时满足MIME类型和文件扩展名检查
+    if (allowedTypes.includes(file.mimetype) && allowedExtensions.includes(ext)) {
         cb(null, true);
     } else {
         cb(new Error('只允许上传ZIP文件'), false);
@@ -74,7 +74,7 @@ router.post('/deployment', (req, res) => {
     deploymentUpload.single('file')(req, res, (err) => {
         if (err) {
             console.error('部署文件上传失败:', err);
-            
+
             if (err instanceof multer.MulterError) {
                 if (err.code === 'LIMIT_FILE_SIZE') {
                     return res.status(400).json({
@@ -83,20 +83,20 @@ router.post('/deployment', (req, res) => {
                     });
                 }
             }
-            
+
             return res.status(400).json({
                 status: 'error',
                 message: err.message || '文件上传失败'
             });
         }
-        
+
         if (!req.file) {
             return res.status(400).json({
                 status: 'error',
                 message: '请选择要上传的文件'
             });
         }
-        
+
         res.json({
             status: 'success',
             message: '文件上传成功',
@@ -120,7 +120,7 @@ router.get('/deployment', (req, res) => {
         const fileList = files.map(filename => {
             const filePath = path.join(deploymentDir, filename);
             const stats = fs.statSync(filePath);
-            
+
             return {
                 filename,
                 size: stats.size,
@@ -128,7 +128,7 @@ router.get('/deployment', (req, res) => {
                 path: `/uploads/deployment/${filename}`
             };
         });
-        
+
         res.json({
             status: 'success',
             data: fileList
@@ -150,16 +150,16 @@ router.delete('/deployment/:filename', (req, res) => {
     try {
         const filename = req.params.filename;
         const filePath = path.join(deploymentDir, filename);
-        
+
         if (!fs.existsSync(filePath)) {
             return res.status(404).json({
                 status: 'error',
                 message: '文件不存在'
             });
         }
-        
+
         fs.unlinkSync(filePath);
-        
+
         res.json({
             status: 'success',
             message: '文件删除成功'

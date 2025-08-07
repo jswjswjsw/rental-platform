@@ -57,7 +57,6 @@ app.use(cors({
             'ionic://localhost',      // Ionic/Capacitor fallback
             'http://localhost',       // Additional fallback
             'https://localhost:8080', // HTTPS development
-            'file://',               // Capacitor file protocol
             'capacitor-electron://',  // Capacitor Electron
             'tauri://'               // Tauri framework
           ]
