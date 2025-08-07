@@ -38,7 +38,7 @@ const deploymentStorage = multer.diskStorage({
 });
 
 // 部署文件过滤器
-const deploymentFileFilter = (req, file, cb) => {
+const deploymentFileFilter = (_req, file, cb) => {
     // 允许的文件类型 - 更严格的验证
     const allowedTypes = [
         'application/zip',

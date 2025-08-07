@@ -33,9 +33,9 @@ import { getToken, removeToken } from './index'
 
 // 创建axios实例
 const api = axios.create({
-  baseURL: import.meta.env.VITE_MOBILE === 'true' || import.meta.env.PROD
-    ? (import.meta.env.VITE_API_BASE_URL || 'http://116.62.44.24:3000/api')
-    : '/api',
+  baseURL: import.meta.env.VITE_MOBILE === 'true' 
+    ? 'http://116.62.44.24:3000/api'  // 移动端直接访问API服务器
+    : import.meta.env.VITE_API_BASE_URL || '/api',  // 使用环境变量或默认代理路径
   timeout: 10000,  // 请求超时时间：10秒
   headers: {
     'Content-Type': 'application/json'

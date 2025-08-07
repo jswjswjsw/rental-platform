@@ -37,8 +37,10 @@ import './style.css'
 // Import mobile styles conditionally based on platform
 if (typeof window !== 'undefined') {
   import('./styles/mobile.css').catch((error) => {
-    // Mobile styles not critical for web platform, but log for debugging
-    console.warn('Mobile styles not loaded:', error.message)
+    // Only warn if not a module resolution error
+    if (!error.message.includes('Failed to resolve module')) {
+      console.error('Failed to load mobile styles:', error)
+    }
   })
 }
 
