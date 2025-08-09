@@ -3,8 +3,6 @@ name: Build Android APK
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -19,8 +17,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: 'qianduan/package-lock.json'
         
     - name: Setup Java
       uses: actions/setup-java@v4
@@ -31,25 +27,26 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       
-    - name: Install frontend dependencies
+    - name: Install dependencies
       working-directory: ./qianduan
-      run: npm ci
-      
+      run: |
+        npm install
+        
     - name: Build frontend
       working-directory: ./qianduan
       run: npm run build
       
-    - name: Add Android platform
-      working-directory: ./qianduan
-      run: npx cap add android
-      
     - name: Sync Capacitor
       working-directory: ./qianduan
-      run: npx cap sync android
-      
-    - name: Build Android APK
+      run: |
+        npx cap add android --confirm
+        npx cap sync android
+        
+    - name: Build APK
       working-directory: ./qianduan/android
-      run: ./gradlew assembleDebug
+      run: |
+        chmod +x ./gradlew
+        ./gradlew assembleDebug
       
     - name: Upload APK
       uses: actions/upload-artifact@v4
