@@ -15,7 +15,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'  # 改为20
+        node-version: '20'
         
     - name: Setup Java
       uses: actions/setup-java@v4
@@ -31,7 +31,6 @@ jobs:
         cd qianduan
         npm install
         npm run build
-        npx @capacitor/cli add android
         npx @capacitor/cli sync android
         cd android
         chmod +x gradlew
